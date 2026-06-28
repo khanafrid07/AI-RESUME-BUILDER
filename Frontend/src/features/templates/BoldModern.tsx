@@ -10,7 +10,7 @@ import {
 
 export default function BoldModern() {
     return (
-        <div className="bg-gray-300 min-h-screen py-10">
+        <div className="min-h-screen ">
             <div className="w-[794px] min-h-[1123px] mx-auto bg-white shadow-2xl">
 
                 {/* Vibrant Header with Gradient */}
@@ -49,8 +49,8 @@ export default function BoldModern() {
                             <h2 className="text-sm font-black uppercase tracking-widest text-gray-900">Professional Summary</h2>
                         </div>
                         <p className="text-sm text-gray-700 leading-7 ml-4">
-                            Innovative full-stack developer with 6+ years of experience architecting and delivering 
-                            high-performance web applications. Proven expertise in React, Node.js, and cloud technologies. 
+                            Innovative full-stack developer with 6+ years of experience architecting and delivering
+                            high-performance web applications. Proven expertise in React, Node.js, and cloud technologies.
                             Leader with strong mentoring capabilities.
                         </p>
                     </section>

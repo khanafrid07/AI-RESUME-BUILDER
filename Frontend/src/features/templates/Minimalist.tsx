@@ -10,7 +10,7 @@ import {
 
 export default function Minimalist() {
     return (
-        <div className="bg-gray-300 min-h-screen py-10">
+        <div className=" min-h-screen py-10">
             <div className="w-[794px] min-h-[1123px] mx-auto bg-gray-950 text-white shadow-2xl">
 
                 {/* Header */}

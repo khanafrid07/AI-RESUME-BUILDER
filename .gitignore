@@ -1,0 +1,4 @@
+free-claude-code/
+.env
+.env.*
+Backend/.env

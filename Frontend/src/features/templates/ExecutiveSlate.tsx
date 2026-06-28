@@ -9,7 +9,7 @@ import {
 
 export default function ExecutiveSlate() {
     return (
-        <div className="bg-gray-300 min-h-screen py-10">
+        <div className=" min-h-screen py-10">
             <div className="w-[794px] min-h-[1123px] mx-auto bg-white shadow-xl">
 
                 <div className="grid grid-cols-4">

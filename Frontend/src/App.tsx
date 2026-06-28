@@ -11,7 +11,7 @@ function App() {
       <Route element={<UserLayout />}>
         <Route index path="/" element={<Home />} />
         <Route path="/resume/templates" element={<TemplatePage />} />
-        <Route path="/create" element={<Dashboard />} />
+        <Route path="/resume/templates/create/:slug" element={<Dashboard />} />
 
 
       </Route>

@@ -11,5 +11,17 @@ export default defineConfig({
       'react': path.resolve('./node_modules/react'),
       'react-dom': path.resolve('./node_modules/react-dom'),
     }
+  },
+  server: {
+    middlewareMode: false,
+    hmr: {
+      host: 'localhost',
+      port: 5173,
+      protocol: 'ws',
+    },
+    watch: {
+      usePolling: true,
+      interval: 100,
+    }
   }
 })

@@ -1,12 +1,12 @@
-import Form from "./components/Form";
-import SectionInfo from "./components/SectionInfo";
+import Form from "../EditorForms/FormController";
+
 
 export default function Dashboard() {
 
     return (
 
         <div>
-            <SectionInfo />
+            
             <Form />
         </div>
     )

@@ -3,19 +3,20 @@ import wrapAsync from "../middlewares/wrapAsync";
 import verifyToken from "../middlewares/verify";
 import Resume from "../models/Resume";
 import { AuthRequest } from "../types/express.d";
+import model from "../services/genAI";
+import GenPrompt from "../config/prompt";
 
 const router = Router()
 
 
-router.post("/", verifyToken, wrapAsync(async (req, res) => {
-    const { title, name, summary, projects, interests, experience, languages, certificates, template, portfolio, linkedin, github, phone, location, email } = req.body;
-    const newResume = new Resume({ name, title, summary, projects, interests, experience, languages, certificates, template, portfolio, linkedin, github, phone, location, email })
-    await newResume.save()
-    res.status(201).json({ message: "Resume Created ", newResume })
+router.post("/templates/create/:slug", wrapAsync(async (req, res) => {
+    const {personalInfo, aiFormData} = req.body
+   console.log(personalInfo, aiFormData)
+   const resp =await model.generateContent(GenPrompt(aiFormData))
+   console.log(resp.response.text())
+})) 
 
-}))
-
-router.get("/", verifyToken, wrapAsync(async (req: AuthRequest, res) => {
+router.get("/", wrapAsync(async (req, res) => {
     if (!req.userId) {
         return res.status(401).json({ message: "Unauthorized" })
     }

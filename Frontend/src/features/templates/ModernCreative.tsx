@@ -10,7 +10,7 @@ import {
 
 export default function ModernCreative() {
     return (
-        <div className="bg-gray-300 min-h-screen py-10">
+        <div className=" min-h-screen py-10">
             <div className="w-[794px] min-h-[1123px] mx-auto bg-white shadow-2xl overflow-hidden">
 
                 <div className="grid grid-cols-4">

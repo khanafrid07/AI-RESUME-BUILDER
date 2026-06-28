@@ -14,11 +14,13 @@ import MinimalistImg from "./thumbnailImg/Minimalist.png"
 import ModernProfessionalImg from "./thumbnailImg/ModerProffessional.png"
 import SimpleElegantImg from "./thumbnailImg/simpleElegent.png"
 
+import type { ComponentType } from "react"
+
 type tempConfig = {
     id:string;
     name:string;
     thumbnail:string;
-    component:any
+    component: ComponentType<any>
 }
 
 export const templates:tempConfig[] = [
@@ -32,7 +34,7 @@ export const templates:tempConfig[] = [
         name:"Classic Formatted",
         id: "classic-formatted",
         thumbnail: ClassicFormattedImg,
-        component : ClassicFormatted
+        component: ClassicFormatted
     },
  
     {
