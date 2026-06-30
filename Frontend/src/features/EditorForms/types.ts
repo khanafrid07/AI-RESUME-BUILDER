@@ -3,15 +3,21 @@ export interface Education{
     schoolName:string;
     startDate:string;
     endDate:string;
+    location:string;
+    description:string
 }
 export interface Experience{
     companyName: string;
     jobRole:string;
     startDate:string;
     endDate:string;
+    location:string;
+    description:string;
 }
 export interface Projects{
     projectName:string;
+    projectLink:string;
+    githubLink:string;
     description:string;
     startDate:string;
     endDate:string;

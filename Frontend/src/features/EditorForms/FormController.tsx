@@ -6,11 +6,12 @@ import type { ContactInfo, ResumeData } from "./types";
 import Steps from "../Dashboard/components/Steps";
 //{forms
 import ContactForm from "./ContactForm";
-import Education from "./Education";
-import Skills from "./Skills";
+import Skills from "./Skills/Skills";
 import Summary from "./Summary";
-import Finalize from "./Finalize";
-import Experience from "./Experience";
+import Projects from "./components/Projects";
+import Finalize from "./Finalize";;
+import Education from "./components/Education";
+import Experience from "./components/Experience";
 //}
 
 type step = "contactForm" | "AiForm";
@@ -60,6 +61,7 @@ export default function FormController() {
         <Skills skills={resumeData.skills} setResumeData={setResumeData}/>,
         <Experience experience={resumeData.experience} setResumeData={setResumeData}/>,
         <Summary summary={resumeData.summary} setResumeData={setResumeData}/>,
+        <Projects projects={resumeData.projects} setResumeData={setResumeData}/>,
         // <Finalize skills={resumeData.fi} setResumeData={setResumeData}/>,
     ]
 
