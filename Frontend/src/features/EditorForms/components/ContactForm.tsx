@@ -1,15 +1,17 @@
 
-import InputField from "../../components/InputFiled";
-import type { ContactInfo, ResumeData } from "./types";
+import e from "cors";
+import InputField from "../../../components/InputFiled";
+import type { PersonalInfo, ResumeData } from "../types";
 import type { Dispatch } from "react";
 import type { SetStateAction } from "react";
 
 type contactProp={
-    contactInfo:ContactInfo
+    contactInfo:PersonalInfo
     setResumeData:Dispatch<SetStateAction<ResumeData>>
+    role:string
 }
 
-export default function ContactForm({ contactInfo, setResumeData }: contactProp) {
+export default function ContactForm({ contactInfo, role, setResumeData }: contactProp) {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -17,6 +19,12 @@ export default function ContactForm({ contactInfo, setResumeData }: contactProp)
             return{...prev, personalInfo:{...prev.personalInfo, [name]:value} }
         })
     };
+    const targetRoleChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+        const {name, value} = e.target
+        setResumeData((prev)=>{
+            return{...prev, [name]:value}
+        })
+    }
 
     return (
         <div className="flex flex-col gap-6">
@@ -33,6 +41,7 @@ export default function ContactForm({ contactInfo, setResumeData }: contactProp)
 
 
             </div>
+            <InputField label="Targeted Role" type="text" value={role} placeholder="Sales Manager" name="targetRole" onChange={targetRoleChange}/>
             <div >
                 
                 

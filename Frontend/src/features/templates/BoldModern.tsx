@@ -8,6 +8,7 @@ import {
     Award,
 } from "lucide-react";
 
+
 export default function BoldModern() {
     return (
         <div className="min-h-screen ">

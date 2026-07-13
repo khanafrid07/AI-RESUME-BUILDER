@@ -1,69 +1,100 @@
-import { Sparkles, Plus, RotateCw, Wand2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Sparkles, Wand2, RotateCw } from "lucide-react";
+import type { Skill } from "../../types";
 
 type AISkillSuggestionsProps = {
-  selectedSkills: string[];
-  onAddSkill: (skill: string) => void;
+  selectedSkills: Skill[];
+  onAddSuggestions: (skill: Skill) => void;
+  handleGenerate: (
+    type: string,
+    aiFormData: Record<string, string>
+  ) => Promise<any>;
 };
 
-const DUMMY_SUGGESTIONS = [
+const DUMMY_SUGGESTIONS: Skill[] = [
   {
+    id: "1",
     category: "Frontend",
     skills: [
       "React",
-      "TypeScript",
-      "Tailwind CSS",
-      "Redux Toolkit",
       "Next.js",
+      "TypeScript",
+      "Redux",
+      "Tailwind CSS",
     ],
   },
   {
+    id: "2",
     category: "Backend",
     skills: [
       "Node.js",
-      "Express.js",
-      "REST API",
+      "Express",
       "JWT",
-      "Socket.io",
+      "REST API",
     ],
   },
   {
+    id: "3",
     category: "Database",
     skills: [
       "MongoDB",
       "PostgreSQL",
-      "Redis",
-    ],
-  },
-  {
-    category: "Tools",
-    skills: [
-      "Git",
-      "Docker",
-      "Postman",
-      "GitHub Actions",
-    ],
-  },
-  {
-    category: "Soft Skills",
-    skills: [
-      "Problem Solving",
-      "Leadership",
-      "Communication",
-      "Team Collaboration",
     ],
   },
 ];
 
 export default function AISkillSuggestions({
   selectedSkills,
-  onAddSkill,
+  onAddSuggestions,
+  handleGenerate,
 }: AISkillSuggestionsProps) {
+  const [selected, setSelected] = useState<Record<string, string[]>>({});
+
+  const alreadyAdded = useMemo(() => {
+    return new Set(
+      selectedSkills.flatMap((group) =>
+        group.skills.map((skill) => skill.toLowerCase())
+      )
+    );
+  }, [selectedSkills]);
+
+  const toggleSkill = (
+    category: string,
+    skill: string
+  ) => {
+    setSelected((prev) => {
+      const current = prev[category] ?? [];
+
+      return {
+        ...prev,
+        [category]: current.includes(skill)
+          ? current.filter((s) => s !== skill)
+          : [...current, skill],
+      };
+    });
+  };
+
+  const handleAdd = (category: string) => {
+    const skills = selected[category] ?? [];
+
+    if (skills.length === 0) return;
+
+    onAddSuggestions({
+      id: crypto.randomUUID(),
+      category,
+      skills,
+    });
+
+    setSelected((prev) => ({
+      ...prev,
+      [category]: [],
+    }));
+  };
+
   return (
     <div className="card border bg-base-100 shadow-sm">
 
       <div className="card-body">
-
-        {/* Header */}
 
         <div className="flex justify-between items-start">
 
@@ -72,8 +103,8 @@ export default function AISkillSuggestions({
             <div className="flex items-center gap-2">
 
               <Sparkles
-                size={22}
                 className="text-primary"
+                size={22}
               />
 
               <h2 className="card-title">
@@ -82,11 +113,10 @@ export default function AISkillSuggestions({
 
             </div>
 
-            <p className="text-base-content/60 mt-2">
+            <p className="mt-2 text-base-content/60">
 
-              AI analyzes your education,
-              experience and projects to recommend
-              the most relevant skills.
+              AI analyzes your resume and recommends
+              relevant skills grouped by category.
 
             </p>
 
@@ -95,19 +125,13 @@ export default function AISkillSuggestions({
           <div className="flex gap-2">
 
             <button className="btn btn-primary">
-
               <Wand2 size={18} />
-
               Generate
-
             </button>
 
             <button className="btn btn-outline">
-
               <RotateCw size={18} />
-
               Regenerate
-
             </button>
 
           </div>
@@ -116,55 +140,89 @@ export default function AISkillSuggestions({
 
         <div className="divider" />
 
-        {/* Categories */}
+        <div className="space-y-8">
 
-        <div className="space-y-6">
+          {DUMMY_SUGGESTIONS.map((group) => (
 
-          {DUMMY_SUGGESTIONS.map((group) => {
+            <div key={group.id}>
 
-            const remainingSkills = group.skills.filter(
-              (skill) =>
-                !selectedSkills.some(
-                  (s) =>
-                    s.toLowerCase() ===
-                    skill.toLowerCase()
-                )
-            );
+              <div className="flex justify-between items-center mb-4">
 
-            if (remainingSkills.length === 0) return null;
-
-            return (
-              <div key={group.category}>
-
-                <h3 className="font-semibold text-lg mb-3">
-
+                <h3 className="font-semibold text-lg">
                   {group.category}
-
                 </h3>
 
-                <div className="flex flex-wrap gap-3">
-
-                  {remainingSkills.map((skill) => (
-
-                    <button
-                      key={skill}
-                      className="btn btn-outline btn-sm gap-2"
-                      onClick={() => onAddSkill(skill)}
-                    >
-
-                      <Plus size={15} />
-
-                      {skill}
-
-                    </button>
-
-                  ))}
-
-                </div>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() =>
+                    handleAdd(group.category ?? "")
+                  }
+                >
+                  Add Selected
+                </button>
 
               </div>
-            );
-          })}
+
+              <div className="flex flex-wrap gap-3">
+
+                {group.skills.map((skill) => {
+
+                  const disabled =
+                    alreadyAdded.has(
+                      skill.toLowerCase()
+                    );
+
+                  const checked =
+                    selected[group.category ?? ""]?.includes(
+                      skill
+                    ) ?? false;
+
+                  return (
+
+                    <label
+                      key={skill}
+                      className={`label cursor-pointer border rounded-lg px-4 py-2 gap-2 ${
+                        disabled
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                    >
+
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm"
+                        disabled={disabled}
+                        checked={checked}
+                        onChange={() =>
+                          toggleSkill(
+                            group.category ?? "",
+                            skill
+                          )
+                        }
+                      />
+
+                      <span>
+
+                        {skill}
+
+                        {disabled && (
+                          <span className="ml-2 text-success text-xs">
+                            (Added)
+                          </span>
+                        )}
+
+                      </span>
+
+                    </label>
+
+                  );
+                })}
+
+              </div>
+
+            </div>
+
+          ))}
 
         </div>
 

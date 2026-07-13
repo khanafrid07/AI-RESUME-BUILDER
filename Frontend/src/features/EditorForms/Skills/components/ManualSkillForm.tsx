@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 
 type ManualSkillFormProps = {
-  onAddSkill: (skill: string) => void;
+  onAddSkill: (skill: { name: string; category: string }) => void;
 };
 
 export default function ManualSkillForm({
@@ -15,7 +15,7 @@ export default function ManualSkillForm({
 
     if (!value) return;
 
-    onAddSkill(value);
+    onAddSkill({ name: value, category: "" });
     setInput("");
   };
 

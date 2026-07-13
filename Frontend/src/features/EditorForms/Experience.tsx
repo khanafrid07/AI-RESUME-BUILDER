@@ -1,42 +1,46 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { Experience as ExperienceType, ResumeData } from "../types.ts";
-import ExperienceForm from "../ExperienceForm";
+import type { Experience as ExperienceType, ResumeData } from "./types";
+import ExperienceForm from "./components/ExperienceForm";
 
 type ExperienceProps = {
   experience: ExperienceType[];
   setResumeData: Dispatch<SetStateAction<ResumeData>>;
+  handleGenerate: (
+    idx: number
+  ) => Promise<any>;
 };
 
 const emptyExperience: ExperienceType = {
-  jobRole: "",
   companyName: "",
-  location: "",
+  jobRole: "",
   startDate: "",
   endDate: "",
-  description: "",
+  currentlyWorking: "",
+  location: "",
+  description: [],
 };
 
 export default function Experience({
   experience,
   setResumeData,
+  handleGenerate,
 }: ExperienceProps) {
   const [showForm, setShowForm] = useState(true);
-
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-
-  const [currentExperience, setCurrentExperience] =
-    useState<ExperienceType>(emptyExperience);
+  const [selectedIndex, setSelectedIndex] = useState<number | 0>(0);
 
   const handleAdd = () => {
-    setEditingIndex(null);
-    setCurrentExperience(emptyExperience);
+    setResumeData((prev) => ({
+      ...prev,
+      experience: [...prev.experience, { ...emptyExperience }],
+    }));
+
+    setSelectedIndex(experience.length);
     setShowForm(true);
   };
 
   const handleEdit = (index: number) => {
-    setEditingIndex(index);
-    setCurrentExperience(experience[index]);
+    setSelectedIndex(index);
     setShowForm(true);
   };
 
@@ -45,66 +49,46 @@ export default function Experience({
       ...prev,
       experience: prev.experience.filter((_, i) => i !== index),
     }));
-  };
 
-  const handleSave = () => {
-    if (editingIndex !== null) {
-      setResumeData((prev) => {
-        const updated = [...prev.experience];
-
-        updated[editingIndex] = currentExperience;
-
-        return {
-          ...prev,
-          experience: updated,
-        };
-      });
-    } else {
-      setResumeData((prev) => ({
-        ...prev,
-        experience: [...prev.experience, currentExperience],
-      }));
+    if (selectedIndex === index) {
+      setSelectedIndex(0);
+      setShowForm(false);
     }
-
-    setCurrentExperience(emptyExperience);
-    setEditingIndex(null);
-    setShowForm(false);
-  };
-
-  const handleCancel = () => {
-    setShowForm(false);
-    setEditingIndex(null);
-    setCurrentExperience(emptyExperience);
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-6">
 
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-semibold">Experience</h1>
 
-        {!showForm && (
-          <button
-            onClick={handleAdd}
-            className="btn btn-primary"
-          >
-            + Add Experience
-          </button>
-        )}
+        <h1 className="text-3xl font-semibold">
+          Experience
+        </h1>
+
+        <button
+          className="btn btn-primary"
+          onClick={handleAdd}
+        >
+          + Add Experience
+        </button>
+
       </div>
 
-      {/* Saved Experiences */}
-
       {experience.length > 0 && (
+
         <div className="space-y-4">
+
           {experience.map((exp, index) => (
+
             <div
               key={index}
-              className="border rounded-xl p-5 shadow-sm"
+              className="rounded-xl border p-5 shadow-sm"
             >
+
               <div className="flex justify-between">
+
                 <div>
+
                   <h2 className="font-semibold text-xl">
                     {exp.jobRole || "Untitled"}
                   </h2>
@@ -116,9 +100,11 @@ export default function Experience({
                   <p className="text-sm text-gray-400">
                     {exp.startDate} - {exp.endDate}
                   </p>
+
                 </div>
 
-                <div className="space-x-3">
+                <div className="space-x-2">
+
                   <button
                     className="btn btn-outline btn-sm"
                     onClick={() => handleEdit(index)}
@@ -132,23 +118,31 @@ export default function Experience({
                   >
                     Delete
                   </button>
+
                 </div>
+
               </div>
+
             </div>
+
           ))}
+
         </div>
+
       )}
 
-      {/* Form */}
+      {showForm && selectedIndex !== null && (
 
-      {showForm && (
         <ExperienceForm
-          experience={currentExperience}
-          setExperience={setCurrentExperience}
-          onSave={handleSave}
-          onCancel={handleCancel}
+          experience={experience[selectedIndex]}
+          index={selectedIndex}
+          setResumeData={setResumeData}
+          handleGenerate={handleGenerate}
+          onClose={() => setShowForm(false)}
         />
+
       )}
+
     </div>
   );
 }

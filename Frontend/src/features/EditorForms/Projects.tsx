@@ -1,44 +1,46 @@
 import { useState } from "react";
 import type { Dispatch, SetStateAction } from "react";
-import type { Projects, ResumeData } from "../types";
-import ProjectForm from "../ProjectForm";
+import type { Projects as ProjectType, ResumeData } from "./types";
+import ProjectForm from "./components/ProjectForm";
 
 type ProjectProps = {
-  projects: Projects[];
+  projects: ProjectType[];
   setResumeData: Dispatch<SetStateAction<ResumeData>>;
+  handleGenerate: (
+    idx: number
+  ) => Promise<any>;
 };
 
-const emptyProject: Projects = {
+const emptyProject: ProjectType = {
   projectName: "",
   projectLink: "",
   githubLink: "",
   description: "",
   startDate: "",
   endDate: "",
-  techStack: [],
+  technologies: [],
 };
 
 export default function Projects({
   projects,
   setResumeData,
+  handleGenerate,
 }: ProjectProps) {
   const [showForm, setShowForm] = useState(true);
-
-  const [editingIndex, setEditingIndex] =
-    useState<number | null>(null);
-
-  const [currentProject, setCurrentProject] =
-    useState<Projects>(emptyProject);
+  const [selectedIndex, setSelectedIndex] = useState<number | 0>(0);
 
   const handleAdd = () => {
-    setEditingIndex(null);
-    setCurrentProject(emptyProject);
+    setResumeData((prev) => ({
+      ...prev,
+      projects: [...prev.projects, { ...emptyProject }],
+    }));
+
+    setSelectedIndex(projects.length);
     setShowForm(true);
   };
 
   const handleEdit = (index: number) => {
-    setEditingIndex(index);
-    setCurrentProject(projects[index]);
+    setSelectedIndex(index);
     setShowForm(true);
   };
 
@@ -47,36 +49,11 @@ export default function Projects({
       ...prev,
       projects: prev.projects.filter((_, i) => i !== index),
     }));
-  };
 
-  const handleSave = () => {
-    if (editingIndex !== null) {
-      setResumeData((prev) => {
-        const updated = [...prev.projects];
-
-        updated[editingIndex] = currentProject;
-
-        return {
-          ...prev,
-          projects: updated,
-        };
-      });
-    } else {
-      setResumeData((prev) => ({
-        ...prev,
-        projects: [...prev.projects, currentProject],
-      }));
+    if (selectedIndex === index) {
+      setSelectedIndex(null);
+      setShowForm(false);
     }
-
-    setCurrentProject(emptyProject);
-    setEditingIndex(null);
-    setShowForm(false);
-  };
-
-  const handleCancel = () => {
-    setCurrentProject(emptyProject);
-    setEditingIndex(null);
-    setShowForm(false);
   };
 
   return (
@@ -88,26 +65,26 @@ export default function Projects({
           Projects
         </h1>
 
-        {!showForm && (
-          <button
-            className="btn btn-primary"
-            onClick={handleAdd}
-          >
-            + Add Project
-          </button>
-        )}
+        <button
+          className="btn btn-primary"
+          onClick={handleAdd}
+        >
+          + Add Project
+        </button>
 
       </div>
 
       {projects.length > 0 && (
+
         <div className="space-y-4">
 
           {projects.map((project, index) => (
 
             <div
-              key={index}
-              className="border rounded-xl p-5 shadow-sm"
+              key={index + project.projectName}
+              className="rounded-xl border p-5 shadow-sm"
             >
+
               <div className="flex justify-between">
 
                 <div>
@@ -141,21 +118,25 @@ export default function Projects({
                 </div>
 
               </div>
+
             </div>
 
           ))}
 
         </div>
+
       )}
 
-      {showForm && (
+      {showForm && selectedIndex !== null && (
+
         <ProjectForm
-          project={currentProject}
-          setProject={setCurrentProject}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          isEditing={editingIndex !== null}
+          index={selectedIndex}
+          project={projects[selectedIndex]}
+          setResumeData={setResumeData}
+          handleGenerate={handleGenerate}
+          onClose={() => setShowForm(false)}
         />
+
       )}
 
     </div>

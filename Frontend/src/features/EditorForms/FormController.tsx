@@ -1,17 +1,18 @@
 import React, { useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import TemplateRenderer from "../templates/TemplateRendere";
-import { useCreateResumeMutation } from "../Dashboard/ResumeApi";
-import type { ContactInfo, ResumeData } from "./types";
+import { useGenerateFiledMutation } from "../Dashboard/ResumeApi";
+import type { PersonalInfo, ResumeData } from "./types";
 import Steps from "../Dashboard/components/Steps";
 //{forms
-import ContactForm from "./ContactForm";
+import ContactForm from "./components/ContactForm";
 import Skills from "./Skills/Skills";
 import Summary from "./Summary";
-import Projects from "./components/Projects";
+import Projects from "./Projects";
 import Finalize from "./Finalize";;
-import Education from "./components/Education";
-import Experience from "./components/Experience";
+import Education from "./Education";
+import Experience from "./Experience";
+import ClassicATS from "../templates/ClassicATS/ClassicATS";
 //}
 
 type step = "contactForm" | "AiForm";
@@ -22,46 +23,130 @@ type editPreview = "edit" | "preview";
 
 export default function FormController() {
     const { slug = "classic-formatted" } = useParams();
-    const [createResume, { isLoading: creatingResume }] = useCreateResumeMutation();
-
-
-    const [contactInfo, setContactInfo] = useState<ContactInfo>({
-        firstName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        address: "",
-        city: "",
-        country: "",
-        portfolioWeb: ""
-    });
+    const [generateField, { isLoading }] = useGenerateFiledMutation()
     const [resumeData, setResumeData] = useState<ResumeData>({
-        personalInfo:{firstName:"", lastName:"", phone:"", email:"", address:"", city:"",country:"",portfolioWeb:""},
-        summary:"",
-        education:[],
-        experience:[],
-        projects:[],
-        skills:[],
-        certifications:[],
-        languages:[]
+        personalInfo: { firstName: "", lastName: "", phone: "", email: "", address: "", city: "", country: "", portfolioWeb: "" },
+        summary: "",
+        education: [{
+            schoolName: "",
+            degree: "",
+            location: "",
+            startDate: "",
+            endDate: "",
+            description: "",
+        }],
+        experience: [{
+            companyName: "",
+            jobRole: "",
+            startDate: "",
+            endDate: "",
+            currentlyWorking: "",
+            location: "",
+            description: [],
+        }],
+        projects: [{
+            projectName: "",
+            projectLink: "",
+            githubLink: "",
+            description: "",
+            startDate: "",
+            endDate: "",
+            technologies: []
 
-        
+        }],
+        skills: [],
+        certifications: [],
+        languages: [],
+        targetRole: ""
+
+
     })
-    console.log(resumeData)
-
 
     const [step, setStep] = useState<number>(0)
 
     const [page, setPage] = useState<step>("contactForm");
     const [editPreviewTab, setEditPreviewTab] = useState<editPreview>("edit");
+    console.log(resumeData)
+
+    const handleGenerate = async (
+        type: string,
+        aiFormData: Record<string, any>
+    ) => {
+        console.log(aiFormData, "ai")
+        try {
+            const res = await generateField({
+                type,
+                aiFormData,
+            }).unwrap();
+            return res.data;
+
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    };
+
+    const handleGenerateSummary = async () => {
+        const data = await handleGenerate("summary", {
+            targetRole: resumeData.targetRole,
+            experience: resumeData.experience,
+            education: resumeData.education,
+            projects: resumeData.projects,
+        })
+        console.log(data, "summary")
+        setResumeData((prev) => {
+            return {
+                ...prev, summary: data.summary
+            }
+        })
+    }
+    const handleGenerateExperience = async (idx: number) => {
+        const data = await handleGenerate("experience", { experience: resumeData.experience, targetRole: resumeData.targetRole, degree: resumeData.education[0]?.degree, skills: resumeData.skills, index: idx })
+        setResumeData((prev) => {
+            const updated = [...prev.experience]
+            updated[idx] = {
+                ...updated[idx], description: data.description
+            }
+            return {
+                ...prev, experience: updated
+            }
+
+        })
+    }
+    const handleGenerateEducation = async (idx: number) => {
+        const data = await handleGenerate("education", { education: resumeData.education, targetRole: resumeData.targetRole, skills: resumeData.skills })
+        setResumeData((prev) => {
+            const updated = [...prev.education]
+            updated[idx] = {
+                ...updated[idx], description: data.description
+            }
+            return {
+                ...prev, education: updated
+            }
+
+        })
+    }
+    const handleGenerateProject = async (idx: number) => {
+        const data = await handleGenerate("project", { projects: resumeData.projects, targetRole: resumeData.targetRole, skills: resumeData.skills })
+        setResumeData((prev) => {
+            const updated = [...prev.projects]
+            updated[idx] = {
+                ...updated[idx], description: data.description
+            }
+            return {
+                ...prev, projects: updated
+            }
+
+        })
+    }
 
     const forms = [
-    <ContactForm contactInfo={resumeData.personalInfo} setResumeData={setResumeData} />,
-        <Education educations={resumeData.education} setResumeData={setResumeData}/>,
-        <Skills skills={resumeData.skills} setResumeData={setResumeData}/>,
-        <Experience experience={resumeData.experience} setResumeData={setResumeData}/>,
-        <Summary summary={resumeData.summary} setResumeData={setResumeData}/>,
-        <Projects projects={resumeData.projects} setResumeData={setResumeData}/>,
+        <ContactForm role={resumeData.targetRole} contactInfo={resumeData.personalInfo} setResumeData={setResumeData} />,
+        <Education educations={resumeData.education} setResumeData={setResumeData} handleGenerate={handleGenerateEducation} />,
+        <Skills skills={resumeData.skills} setResumeData={setResumeData} handleGenerate={handleGenerate} />,
+        <Experience experience={resumeData.experience} setResumeData={setResumeData} handleGenerate={handleGenerateExperience} />,
+        <Summary resumeData={resumeData} summary={resumeData.summary} setResumeData={setResumeData} handleGenerate={handleGenerateSummary} />,
+        <Projects projects={resumeData.projects} setResumeData={setResumeData} handleGenerate={handleGenerateProject} />,
         // <Finalize skills={resumeData.fi} setResumeData={setResumeData}/>,
     ]
 
@@ -76,9 +161,9 @@ export default function FormController() {
         if (step == 0) return
         setStep((prev) => prev - 1)
 
-
     }
-    console.log(step)
+
+    console.log(resumeData, "resumeData")
 
     // const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement | HTMLAreaElement | EventTarget>) => {
     //     e.preventDefault()
@@ -91,7 +176,7 @@ export default function FormController() {
 
     //     }
 
-    
+
 
     return (
         <div>
@@ -135,7 +220,7 @@ export default function FormController() {
 
                     <div className={`md:flex justify-center ${editPreviewTab === "edit" && "hidden"}  `}>
                         <div className="transform scale-[0.6] md:scale-[0.5] lg:scale-[0.7] origin-top ">
-                            <TemplateRenderer templateId={slug} contactInfo={contactInfo} />
+                            <ClassicATS resumeData={resumeData} />
                         </div>
                     </div>
                 </div>

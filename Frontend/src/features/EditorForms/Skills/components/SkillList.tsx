@@ -1,25 +1,44 @@
 import { X, Award } from "lucide-react";
+import type { Skill } from "../../types";
 
 type SkillListProps = {
-  skills: string[];
-  onRemoveSkill: (skill: string) => void;
+  skills: Skill[];
+  onRemoveSkill: (id: string) => void;
 };
 
 export default function SkillList({
   skills,
   onRemoveSkill,
 }: SkillListProps) {
+  const groupedSkills = skills.reduce<
+    Record<string, Skill[]>
+  >((acc, skill) => {
+    const category =
+      skill.category?.trim() || "Other";
+
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+
+    acc[category].push(skill);
+
+    return acc;
+  }, {});
+  console.log("groupedSkills", skills);
+
   return (
     <div className="card border bg-base-100 shadow-sm">
-      <div className="card-body">
 
-        {/* Header */}
+      <div className="card-body">
 
         <div className="flex justify-between items-center">
 
           <div className="flex items-center gap-2">
 
-            <Award className="text-primary" size={22} />
+            <Award
+              className="text-primary"
+              size={22}
+            />
 
             <h2 className="card-title">
               Your Skills
@@ -28,12 +47,15 @@ export default function SkillList({
           </div>
 
           <div className="badge badge-outline">
-            {skills.length} {skills.length === 1 ? "Skill" : "Skills"}
+
+            {skills.length}{" "}
+            {skills.length === 1
+              ? "Skill"
+              : "Skills"}
+
           </div>
 
         </div>
-
-        {/* Empty State */}
 
         {skills.length === 0 ? (
 
@@ -43,51 +65,74 @@ export default function SkillList({
               No Skills Added
             </h3>
 
-            <p className="text-base-content/60 mt-2 max-w-md mx-auto">
-              Add skills manually or let AI generate
-              personalized recommendations based on your
-              resume.
+            <p className="text-base-content/60 mt-2">
+
+              Add your skills manually or let AI
+              suggest skills based on your resume.
+
             </p>
 
           </div>
 
         ) : (
 
-          <div className="flex flex-wrap gap-3">
+          <div className="space-y-6">
 
-            {skills.map((skill) => (
+            {Object.entries(groupedSkills).map(
+              ([category, categorySkills]) => (
 
-              <div
-                key={skill}
-                className="
-                  badge
-                  badge-primary
-                  badge-lg
-                  gap-2
-                  py-4
-                  px-4
-                  font-medium
-                "
-              >
+                <div key={category}>
 
-                {skill}
+                  <h3 className="font-semibold text-sm uppercase tracking-wide text-base-content/60 mb-3">
 
-                <button
-                  className="hover:opacity-70 transition"
-                  onClick={() => onRemoveSkill(skill)}
-                >
-                  <X size={14} />
-                </button>
+                    {category}
 
-              </div>
+                  </h3>
 
-            ))}
+                  <div className="flex flex-wrap gap-3">
+
+                    {categorySkills.map((skill) => (
+
+                      <div
+                        key={skill.id}
+                        className="badge badge-primary badge-lg gap-2 py-4 px-4"
+                      >
+
+                        <span>
+                          {skill.skills.map((n, idx) => (
+                            <span key={idx}>
+                              {n}
+                            </span>
+                          ))}
+                        </span>
+
+                        <button
+                          onClick={() =>
+                            onRemoveSkill(skill.id)
+                          }
+                        >
+
+                          <X size={14} />
+
+                        </button>
+
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                </div>
+
+              )
+            )}
 
           </div>
 
         )}
 
       </div>
+
     </div>
   );
 }

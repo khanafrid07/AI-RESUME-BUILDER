@@ -1,18 +1,23 @@
 import type { ChangeEvent, Dispatch, SetStateAction } from "react";
 import type { ResumeData } from "./types";
+import type React from "react";
 
 type SummaryProps = {
     summary:string
+    resumeData:ResumeData
    setResumeData: Dispatch<SetStateAction<ResumeData>>;
+   handleGenerate: ()=>Promise<any>
 };
 
-export default function Summary({ summary, setResumeData }: SummaryProps) {
+export default function Summary({ summary,resumeData, setResumeData , handleGenerate}: SummaryProps) {
     console.log(summary)
-    // const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    //     const { name, value } = event.target;
-    //     const fieldName = name as keyof AiFormInfo;
-    //     setAiFormData((prev) => ({ ...prev, [fieldName]: value }));
-    // };
+  const handleChange=(e:React.ChangeEvent<HTMLTextAreaElement>)=>{
+    let {value} = e.target
+    setResumeData((prev)=>{
+        return {...prev, summary:value}
+    })
+  }
+  
 
     return (
         <div className="flex flex-col gap-6 p-4">
@@ -23,14 +28,18 @@ export default function Summary({ summary, setResumeData }: SummaryProps) {
                 <label className="label block">
                     <span className="label-text font-medium">Professional Summary</span>
                 </label>
+                <div className="textarea w-full">
                 <textarea
                     name="summary"
-                    // value={aiFormData.summary}
-                    // onChange={handleChange}
+                    value={resumeData.summary}
+                    onChange={handleChange}
                     rows={8}
-                    className="textarea textarea-bordered w-full resize-none"
+                    className="w-full border-none resize-none"
                     placeholder="Write a compelling professional summary that highlights your key strengths, experience, and what you're looking for in your next role. Keep it concise and impactful (2-4 sentences)."
                 />
+                <button className="btn btn-primary" onClick={()=>handleGenerate()}>Generate</button>
+
+                </div>
             </div>
         </div>
     );

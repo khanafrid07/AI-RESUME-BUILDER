@@ -1,42 +1,74 @@
-import InputField from "../../components/InputFiled";
-import type { Education } from "./types";
+import InputField from "../../../components/InputFiled";
+import type { Dispatch, SetStateAction } from "react";
+import type { Education, ResumeData } from "../types";
 
 type EducationFormProps = {
   education: Education;
-  setEducation: React.Dispatch<React.SetStateAction<Education>>;
-  onSave: () => void;
-  onCancel: () => void;
-  isEditing: boolean;
+  index: number;
+  setResumeData: Dispatch<SetStateAction<ResumeData>>;
+  handleGenerate: (
+    idx: number
+  ) => Promise<any>;
+  onClose: () => void;
 };
 
 export default function EducationForm({
   education,
-  setEducation,
-  onSave,
-  onCancel,
-  isEditing,
+  index,
+  setResumeData,
+  handleGenerate,
+  onClose,
 }: EducationFormProps) {
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
-    setEducation((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setResumeData((prev) => {
+      const updatedEducation = [...prev.education];
+
+      updatedEducation[index] = {
+        ...updatedEducation[index],
+        [name]: value,
+      };
+
+      return {
+        ...prev,
+        education: updatedEducation,
+      };
+    });
+  };
+  const generateDescription = async () => {
+
+    if (!education.schoolName || !education.degree) {
+      alert("Please enter school name and degree.");
+      return;
+    }
+
+    const res = await handleGenerate(index);
+
+    if (!res) return;
+
+    setResumeData((prev) => {
+      const updatedEducation = [...prev.education];
+
+      updatedEducation[index] = {
+        ...updatedEducation[index],
+        description: res,
+      };
+
+      return {
+        ...prev,
+        education: updatedEducation,
+      };
+    });
   };
 
   return (
-    <div className="border rounded-xl p-6 shadow-md space-y-6">
+    <div className="border rounded-xl p-6 shadow-md bg-base-100 space-y-6">
 
       <h2 className="text-2xl font-semibold">
-
-        {isEditing
-          ? "Edit Education"
-          : "Add Education"}
-
+        Education
       </h2>
 
       <div className="grid grid-cols-2 gap-4">
@@ -93,38 +125,38 @@ export default function EducationForm({
       <div>
 
         <label className="label">
-
           <span className="label-text font-medium">
             Description
           </span>
-
         </label>
 
         <textarea
           className="textarea textarea-bordered w-full"
           rows={8}
           name="description"
-          placeholder="Mention achievements, GPA, coursework, etc."
+          placeholder="Mention achievements, GPA, coursework, awards..."
           value={education.description}
           onChange={handleChange}
         />
 
+        <div className="mt-3 flex justify-end">
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={generateDescription}
+          >
+            Generate Description
+          </button>
+        </div>
+
       </div>
 
-      <div className="flex justify-end gap-3">
-
-        <button
-          className="btn btn-outline"
-          onClick={onCancel}
-        >
-          Cancel
-        </button>
+      <div className="flex justify-end">
 
         <button
           className="btn btn-primary"
-          onClick={onSave}
+          onClick={onClose}
         >
-          Save Education
+          Done
         </button>
 
       </div>

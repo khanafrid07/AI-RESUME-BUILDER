@@ -1,18 +1,17 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-type CreateResumePayload = {
-  personalInfo: Record<string, string>;
-  aiFormData: Record<string, string>;
+type GenerateFieldRequest = {
+    type: string;
+    aiFormData: Record<string, any>;
 };
-
 export const resumeApi = createApi({
   reducerPath: "resumeApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080/api/resume" }),
   tagTypes: ["resume"],
   endpoints: (builder) => ({
-    createResume: builder.mutation<Record<string, string>, CreateResumePayload>({
+    generateFiled: builder.mutation<any, GenerateFieldRequest>({
       query: (body) => ({
-        url: "/templates/create/:slug",
+        url: "/ai/generate",
         method: "POST",
         body,
       }),
@@ -21,4 +20,4 @@ export const resumeApi = createApi({
   }),
 });
 
-export const { useCreateResumeMutation } = resumeApi;
+export const { useGenerateFiledMutation } = resumeApi;
