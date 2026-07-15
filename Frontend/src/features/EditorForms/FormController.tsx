@@ -57,9 +57,9 @@ export default function FormController() {
         skills: [],
         certifications: [],
         languages: [],
-        targetRole: ""
-
-
+        targetRole: "",
+        hobbies: [],
+        customSections: [],
     })
 
     const [step, setStep] = useState<number>(0)
@@ -147,7 +147,7 @@ export default function FormController() {
         <Experience experience={resumeData.experience} setResumeData={setResumeData} handleGenerate={handleGenerateExperience} />,
         <Summary resumeData={resumeData} summary={resumeData.summary} setResumeData={setResumeData} handleGenerate={handleGenerateSummary} />,
         <Projects projects={resumeData.projects} setResumeData={setResumeData} handleGenerate={handleGenerateProject} />,
-        // <Finalize skills={resumeData.fi} setResumeData={setResumeData}/>,
+        <Finalize resumeData={resumeData} setResumeData={setResumeData} />,
     ]
 
     const handleStepsIncrease = () => {

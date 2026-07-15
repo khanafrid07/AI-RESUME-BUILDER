@@ -52,7 +52,11 @@ export type Language = {
     proficiency: string;
 };
 
-
+export interface CustomSection {
+    id: string;
+    title: string;
+    content: string;
+}
 
 export interface ResumeData {
     personalInfo: PersonalInfo;
@@ -63,5 +67,7 @@ export interface ResumeData {
     skills: Skill[];
     certifications: Certification[];
     languages: Language[];
-    targetRole:""
+    targetRole: string;
+    hobbies: string[];
+    customSections: CustomSection[];
 }

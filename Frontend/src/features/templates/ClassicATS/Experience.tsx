@@ -6,13 +6,16 @@ type Props = {
 };
 
 export default function Experience({ experience }: Props) {
+
+    const filterExperince = experience.filter((exp) => Object.values(exp).some((val) => String(val) !== ""))
     return (
         <section>
-            <SectionHeading title="Professional Experience" />
+            {filterExperince.length > 0 &&
+                <SectionHeading title="Professional Experience" />}
 
             <div className="space-y-7">
 
-                {experience.map((exp, id:number) => (
+                {filterExperince.map((exp, id: number) => (
                     <div key={id}>
 
                         <div className="flex justify-between items-start">
@@ -31,7 +34,7 @@ export default function Experience({ experience }: Props) {
                                         {exp.companyName}
                                     </span>
 
-                                   {exp.location}
+                                    {exp.location}
                                 </div>
 
                             </div>
@@ -65,6 +68,9 @@ export default function Experience({ experience }: Props) {
                 ))}
 
             </div>
+
         </section>
+
     );
+
 }

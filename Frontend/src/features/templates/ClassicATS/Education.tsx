@@ -6,15 +6,16 @@ type Props = {
 };
 
 export default function Education({ education }: Props) {
-    console.log(education, "new ed")
+    const filterEducation = education.filter((edu) => Object.values(edu).some((val) => String(val) !== ""))
     return (
         <section>
+            {filterEducation.length > 0 &&
 
-            <SectionHeading title="Education" />
+                <SectionHeading title="Education" />}
 
             <div className="space-y-5">
 
-                {education.map((edu, id) => (
+                {filterEducation.map((edu, id) => (
 
                     <div key={id}>
 

@@ -1,74 +1,91 @@
-# React + TypeScript + Vite
+# 💻 AI Resume Builder - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the React + TypeScript frontend for the **AI Resume Builder**. It provides a fully interactive, step-by-step editing wizard alongside a live-updated resume preview panel.
 
-Currently, two official plugins are available:
+> [!WARNING]
+> **⚠️ WORK IN PROGRESS & ACTIVE DEVELOPMENT**
+> The frontend is currently in the **active development phase**. The core forms structure, UI layouts, template styling, state management, and API slice mutations are fully functional, but features like PDF export, template selector bindings, and database saves are still under construction.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🚀 Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Split-Screen Dynamic Preview:** Interactive forms on the left and real-time styled resume template on the right.
+- **Customizable Multi-step Wizard:**
+  1. **Contact Info:** Name, contact details, profile, target role.
+  2. **Education:** Input degrees, school names, dates, descriptions.
+  3. **Skills:** Tag input with AI-suggested skills options.
+  4. **Experience:** Log past jobs, timeline, and use AI to generate descriptive accomplishment points.
+  5. **Summary:** Write your own summary or generate one using Gemini AI.
+  6. **Projects:** Document project names, links, and descriptions.
+  7. **Finalize:** Add custom fields like certifications, languages, hobbies, or arbitrary new custom text blocks.
+- **Premium Templates:** Built-in modern templates like *Bold Modern*, *Classic ATS*, *Minimalist*, *Modern Professional*, *Simple Elegant*, and more.
+- **Redux State Management:** Global state control and API mutations handled via Redux Toolkit and RTK Query.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Technology Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Framework:** React 19
+- **Bundler:** Vite
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4, DaisyUI v5 (Tailwind CSS component library)
+- **Icons:** Lucide React
+- **State Management:** Redux Toolkit, React Redux, RTK Query
+- **Routing:** React Router DOM v7
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📂 Folder Structure
+
+```
+Frontend/
+├── public/                 # Static assets
+└── src/
+    ├── app/                # Redux store config (store.ts)
+    ├── assets/             # Global visual assets
+    ├── components/         # Common inputs and shared visual elements
+    ├── features/
+    │   ├── Dashboard/      # Main dashboard wrapper & RTK Query slice (ResumeApi.ts)
+    │   ├── EditorForms/    # Multi-step forms (Contact, Education, Experience, Summary, Projects, Finalize)
+    │   └── templates/      # Collection of resume templates (ClassicATS, BoldModern, etc.)
+    ├── layout/             # Shared layout components (Navbar, Footer)
+    ├── Pages/              # Page layouts (Home.tsx, TempleatePage.tsx, UserLayout.tsx)
+    ├── App.tsx             # Route definitions
+    ├── App.css             # Main styling overrides
+    ├── index.css           # Tailwind directives
+    └── main.tsx            # React application entry point
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🏃 Getting Started
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Prerequisites
+Make sure you have Node.js installed. Ensure the backend server is running so that the AI suggestions and template persistence endpoints work properly.
 
+### Installation
+1. Install the dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Build the application for production:
+   ```bash
+   npm run build
+   ```
+
+4. Preview the production build locally:
+   ```bash
+   npm run preview
+   ```
+
+---
+
+## 🔗 Main Project README
+For detailed documentation on the overall application architecture, backend API, setup, and database design, please see the [Main Project README](../README.md).

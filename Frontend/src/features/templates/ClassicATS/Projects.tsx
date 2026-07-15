@@ -19,23 +19,28 @@ export default function Projects({ projects }: Props) {
 
                 {ProjectFilter.map((project, id) => (
 
+
+
                     <div key={id}>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                                <FolderGit2
+                                    size={18}
+                                    className="text-blue-700"
+                                />
 
-                            <FolderGit2
-                                size={18}
-                                className="text-blue-700"
-                            />
+                                <h3 className="font-bold text-[15px]">
+                                    {project.projectName}
+                                </h3>
+                            </div>
 
-                            <h3 className="font-bold text-[15px]">
-                                {project.projectName}
-                            </h3>
+                            <div className="text-sm text-slate-500 font-medium">{project.startDate} - {project.endDate}</div>
 
                         </div>
 
                         <p className="mt-2 text-[14px] text-slate-700 leading-6">
-                            {/* {project.description} */}
+                            {project.description}
                         </p>
 
                         {project.technologies.length > 0 && (
@@ -59,10 +64,13 @@ export default function Projects({ projects }: Props) {
 
                     </div>
 
+
+
                 ))}
+
 
             </div>
 
-        </section>
+        </section >
     );
 }
