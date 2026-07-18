@@ -20,7 +20,10 @@ export default function Navbar() {
 
                 </div>
                 <div className="navbar-end">
-                    <a className="btn">TOggler</a>
+                    <a className="btn">Toggler</a>
+                </div>
+                <div className="flex gap-4"><a href="/auth/login">Login</a>
+                    <a href="/auth/signup">Signup</a>
                 </div>
             </div>
         </nav>

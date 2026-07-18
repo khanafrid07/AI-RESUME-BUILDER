@@ -1,4 +1,4 @@
-import React, { useState, type ChangeEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import TemplateRenderer from "../templates/TemplateRendere";
 import { useGenerateFiledMutation } from "../Dashboard/ResumeApi";
@@ -12,7 +12,7 @@ import Projects from "./Projects";
 import Finalize from "./Finalize";;
 import Education from "./Education";
 import Experience from "./Experience";
-import ClassicATS from "../templates/ClassicATS/ClassicATS";
+
 //}
 
 type step = "contactForm" | "AiForm";
@@ -22,57 +22,67 @@ type editPreview = "edit" | "preview";
 
 
 export default function FormController() {
-    const { slug = "classic-formatted" } = useParams();
+    const { slug = "classic-ats" } = useParams();
     const [generateField, { isLoading }] = useGenerateFiledMutation()
-    const [resumeData, setResumeData] = useState<ResumeData>({
-        personalInfo: { firstName: "", lastName: "", phone: "", email: "", address: "", city: "", country: "", portfolioWeb: "" },
-        summary: "",
-        education: [{
-            schoolName: "",
-            degree: "",
-            location: "",
-            startDate: "",
-            endDate: "",
-            description: "",
-        }],
-        experience: [{
-            companyName: "",
-            jobRole: "",
-            startDate: "",
-            endDate: "",
-            currentlyWorking: "",
-            location: "",
-            description: [],
-        }],
-        projects: [{
-            projectName: "",
-            projectLink: "",
-            githubLink: "",
-            description: "",
-            startDate: "",
-            endDate: "",
-            technologies: []
+    const savedResume = localStorage.getItem("data");
 
-        }],
-        skills: [],
-        certifications: [],
-        languages: [],
-        targetRole: "",
-        hobbies: [],
-        customSections: [],
-    })
+    const initialData = savedResume
+        ? JSON.parse(savedResume)
+        : {
+            personalInfo: { firstName: "", lastName: "", phone: "", email: "", address: "", city: "", country: "", portfolioWeb: "" },
+            summary: "",
+            education: [{
+                schoolName: "",
+                degree: "",
+                location: "",
+                startDate: "",
+                endDate: "",
+                description: "",
+            }],
+            experience: [{
+                companyName: "",
+                jobRole: "",
+                startDate: "",
+                endDate: "",
+                currentlyWorking: "",
+                location: "",
+                description: [],
+            }],
+            projects: [{
+                projectName: "",
+                projectLink: "",
+                githubLink: "",
+                description: "",
+                startDate: "",
+                endDate: "",
+                technologies: []
+
+            }],
+            skills: [],
+            certifications: [],
+            languages: [],
+            targetRole: "",
+            hobbies: [],
+            customSections: [],
+        }
+    const [resumeData, setResumeData] = useState<ResumeData>(initialData)
 
     const [step, setStep] = useState<number>(0)
 
     const [page, setPage] = useState<step>("contactForm");
     const [editPreviewTab, setEditPreviewTab] = useState<editPreview>("edit");
-    console.log(resumeData)
+
+
+
+    useEffect(() => {
+        localStorage.setItem("data", JSON.stringify(resumeData))
+        console.log("Data saved to localStorage")
+    }, [resumeData])
 
     const handleGenerate = async (
         type: string,
         aiFormData: Record<string, any>
     ) => {
-        console.log(aiFormData, "ai")
         try {
             const res = await generateField({
                 type,
@@ -165,38 +175,9 @@ export default function FormController() {
 
     console.log(resumeData, "resumeData")
 
-    // const handleFormSubmit = async (e: React.ChangeEvent<HTMLInputElement | HTMLAreaElement | EventTarget>) => {
-    //     e.preventDefault()
-    //     try {
-    //         await createResume({ personalInfo: contactInfo, aiFormData: aiFormData }).unwrap()
-    //         console.log("send th data")
-
-    //     } catch (err) {
-    //         console.log(err)
-
-    //     }
-
-
-
     return (
         <div>
-            {/* <div className="flex justify-center">
-            <div className=" gap-4 border shadow-lg w-fit rounded-lg p-2 border-gray-200">
-                <button
-                    onClick={() => setEditPreviewTab("edit")}
-                    className={`btn shadow-md px-12 ${editPreviewTab === "edit" ? "bg-blue-300" : ""}`}
-                >
-                    Edit
-                </button>
-                <button
-                    onClick={() => setEditPreviewTab("preview")}
-                    className="btn shadow-md px-12"
-                >
-                    Preview
-                </button>
-            </div>
 
-            </div> */}
             <div className="w-full">
 
                 <Steps />
@@ -220,7 +201,7 @@ export default function FormController() {
 
                     <div className={`md:flex justify-center ${editPreviewTab === "edit" && "hidden"}  `}>
                         <div className="transform scale-[0.6] md:scale-[0.5] lg:scale-[0.7] origin-top ">
-                            <ClassicATS resumeData={resumeData} />
+                            <TemplateRenderer templateId={slug} resumeData={resumeData} />
                         </div>
                     </div>
                 </div>

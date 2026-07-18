@@ -1,65 +1,62 @@
-import BoldModern from "./BoldModern"
-import ClassicFormatted from "./ClassicFormatted"
-import MinimalClean from "./MinimalClean"
-import Minimalist from "./Minimalist"
-
-import ModernProfessional from "./ModernProffessional"
-import SimpleElegant from "./SimpleElegant"
-//imgs//
-
-import BoldModernImg from "./thumbnailImg/BoldModern.png"
-import ClassicFormattedImg from "./thumbnailImg/ClassicFormatted.png"
-import MinimalCleanImg from "./thumbnailImg/MinimalClean.png"
-import MinimalistImg from "./thumbnailImg/Minimalist.png"
-import ModernProfessionalImg from "./thumbnailImg/ModerProffessional.png"
-import SimpleElegantImg from "./thumbnailImg/simpleElegent.png"
+import ClassicATS from "./ClassicATS/ClassicATS"
+import ProfessionalClean from "./ProfessionalClean/ProfessionalClean"
+import ExecutiveTimeline from "./ExecutiveTimeline/ExecutiveTimeline"
+import FederalATS from "./FederalATS/FederalATS"
+import ChronologicalPro from "./ChronologicalPro/ChronologicalPro"
+import HarvardStyle from "./HarvardStyle/HarvardStyle"
 
 import type { ComponentType } from "react"
 
 type tempConfig = {
-    id:string;
-    name:string;
-    thumbnail:string;
-    component: ComponentType<any>
+    id: string;
+    name: string;
+    component: ComponentType<any>;
+    description?: string;
+    thumbnail?: string;
+    tag?: string;
 }
 
-export const templates:tempConfig[] = [
+export const templates: tempConfig[] = [
     {
-        name:"Bold Modern",
-        id: "bold-modern",
-        thumbnail: BoldModernImg,
-        component : BoldModern
+        name: "Classic ATS",
+        id: "classic-ats",
+        component: ClassicATS,
+        description: "Traditional ATS layout with blue accents and clear section headings",
+        tag: "ATS Friendly",
     },
     {
-        name:"Classic Formatted",
-        id: "classic-formatted",
-        thumbnail: ClassicFormattedImg,
-        component: ClassicFormatted
-    },
- 
-    {
-        name:"Minimal Clean",
-        id: "minimal-clean",
-        thumbnail: MinimalCleanImg,
-        component : MinimalClean
+        name: "Professional Clean",
+        id: "professional-clean",
+        component: ProfessionalClean,
+        description: "Centered serif header, thin rule separators, inline skill categories",
+        tag: "ATS Friendly",
     },
     {
-        name:"Minimalist",
-        id: "minimalist",
-        thumbnail: MinimalistImg,
-        component : Minimalist
-    },
-
-    {
-        name:"Modern Professional",
-        id: "modern-professional",
-        thumbnail: ModernProfessionalImg,
-        component : ModernProfessional
+        name: "Executive Timeline",
+        id: "executive-timeline",
+        component: ExecutiveTimeline,
+        description: "Two-column layout with left-border timeline and sidebar for edu/skills",
+        tag: "ATS Friendly",
     },
     {
-        name:"Simple Elegant",
-        id: "simple-elegant",
-        thumbnail: SimpleElegantImg,
-        component : SimpleElegant
-    }
+        name: "Federal ATS",
+        id: "federal-ats",
+        component: FederalATS,
+        description: "Government-style monospace font, LASTNAME FIRSTNAME, grid contact row",
+        tag: "ATS Friendly",
+    },
+    {
+        name: "Chronological Pro",
+        id: "chronological-pro",
+        component: ChronologicalPro,
+        description: "Calibri-inspired, vertical bar section accents, clean and compact",
+        tag: "ATS Friendly",
+    },
+    {
+        name: "Harvard Style",
+        id: "harvard-style",
+        component: HarvardStyle,
+        description: "Academic serif, centered dual-rule headings, education-first ordering",
+        tag: "ATS Friendly",
+    },
 ]
