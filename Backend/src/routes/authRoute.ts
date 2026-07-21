@@ -3,61 +3,38 @@ import wrapAsync from "../middlewares/wrapAsync";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import redis from "../config/redis";
 
 const router: Router = Router();
 
 const secret = process.env.JWT_SECRET;
 
-router.post(
-    "/register",
-    wrapAsync(async (req, res) => {
-        const { name, email, password } = req.body;
-
-        if (!secret) {
-            return res.status(500).json({ message: "Server error" });
+router.post("/auth/register/send-otp", wrapAsync(async (req, res) => {
+    const { email, password, username } = req.body;
+    if (!email || !password || !username) {
+        return res.status(400).json({ message: "Please fill all the fields" })
+    }
+    const isUserAlreadyInRedis = await redis.get(`user:${email}`)
+    if (isUserAlreadyInRedis) {
+        const resendOtp = await redis.incr(`resend:${email}`)
+        if (resendOtp > 5) {
+            return res.status(400).json({ message: "Too many resend requests" })
         }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const newUser = new User({
-            name,
-            email,
-            password: hashedPassword,
-        });
-
-        await newUser.save();
-
-        const token = jwt.sign(
-            { id: newUser._id, email: newUser.email },
-            secret,
-            { expiresIn: "7d" }
-        );
-
-        res.status(201).json({
-            message: "User registered successfully",
-            token,
-        });
-    })
-);
-
-router.post("/login", wrapAsync(async (req, res) => {
-    const { email, password } = req.body;
-    const existingUser = await User.findOne({ email })
-    if (!existingUser) {
-        return res.status(404).json({ message: "User not found" })
     }
-    const isMatch = await bcrypt.compare(password, existingUser?.password)
-    if (isMatch) {
-        return res.status(401).json({ message: "Invalid Credentials" })
+    const userExists = await User.findOne({ email })
+    if (userExists) {
+        return res.status(400).json({ message: "User already exists" })
     }
-    if (!secret) {
-        return res.status(500).json({ message: "Server error" });
-    }
+    const hashedPw = await bcrypt.hash(password, 10)
+    await redis.set(`user:${email}`, JSON.stringify({ email, hashedPw, username }), 'EX', 60);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    await redis.set(`otp:${email}`, otp, 'EX', 60);
 
-    const token = jwt.sign({ id: existingUser._id, email: existingUser.email }, secret, { expiresIn: "7D" })
 
-    return res.status(200).json({ message: "User logged in successful", token })
+    return res.status(200).json({ message: "Otp sent Successfully" })
 
-}))
 
-export default router;
+}));
+
+
+export default router
