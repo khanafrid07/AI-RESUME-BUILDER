@@ -3,17 +3,19 @@ import wrapAsync from "../middlewares/wrapAsync";
 import User from "../models/User";
 import bcrypt from "bcryptjs";
 import redis from "../config/redis";
-import { resendRateLimit } from "../helper/resendOtpLimit";
+import { otpRateLimit } from "../helper/otpRateLimit";
 import { genRefreshAccessToken } from "../helper/refreshAccessTokenGen";
 import { CookieOptions } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
 const router: Router = Router();
+
 
 
 const cookieOptions: CookieOptions = {
     httpOnly: true,
     secure: true,
     sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
 }
 
 
@@ -33,12 +35,12 @@ router.post("/register/send-otp", wrapAsync(async (req, res) => {
             message: "User already exists"
         });
     }
-    await resendRateLimit(email);
+    await otpRateLimit(email);
 
     const hashedPw = await bcrypt.hash(password, 10);
 
     await redis.set(
-        `user:${email}`,
+        `register:user:${email}`,
         JSON.stringify({
             email,
             username,
@@ -51,7 +53,7 @@ router.post("/register/send-otp", wrapAsync(async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log(otp)
 
-    await redis.set(`otp:${email}`, otp, "EX", 60);
+    await redis.set(`register:otp:${email}`, otp, "EX", 60);
 
     // await sendOtp(email, otp);
 
@@ -63,18 +65,18 @@ router.post("/register/send-otp", wrapAsync(async (req, res) => {
 router.post("/register/resend-otp", wrapAsync(async (req, res) => {
     const { email } = req.body;
 
-    const userTemp = await redis.get(`user:${email}`)
+    const userTemp = await redis.get(`register:user:${email}`)
     if (!userTemp) {
         return res.status(404).json({
             message: "User not found"
         })
     }
-    await resendRateLimit(email);
+    await otpRateLimit(email);
 
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await redis.set(`otp:${email}`, otp, "EX", 60);
+    await redis.set(`register:otp:${email}`, otp, "EX", 60);
 
     // await sendOtp(email, otp);
 
@@ -85,7 +87,7 @@ router.post("/register/resend-otp", wrapAsync(async (req, res) => {
 
 router.post("/register/verify-otp", wrapAsync(async (req, res) => {
     const { email, otp } = req.body;
-    const userTemp = await redis.get(`user:${email}`)
+    const userTemp = await redis.get(`register:user:${email}`)
     if (!email || !otp) {
         return res.status(400).json({
             message: "Email and Otp are required"
@@ -96,7 +98,7 @@ router.post("/register/verify-otp", wrapAsync(async (req, res) => {
             message: "User not found"
         })
     }
-    const verifyOtp = await redis.get(`otp:${email}`)
+    const verifyOtp = await redis.get(`register:otp:${email}`)
     if (!verifyOtp) {
         return res.status(404).json({
             message: "OTP not found"
@@ -108,21 +110,71 @@ router.post("/register/verify-otp", wrapAsync(async (req, res) => {
         })
     }
     const parsedUser = JSON.parse(userTemp)
-    await User.create({
+    const user = await User.create({
         email: parsedUser.email,
         username: parsedUser.username,
         password: parsedUser.hashedPw
     })
-    await redis.del(`user:${email}`)
-    await redis.del(`otp:${email}`)
-    await redis.del(`resend:${email}`)
+    await redis.del(`register:user:${email}`)
+    await redis.del(`register:otp:${email}`)
 
-    const { refreshToken, accessToken } = await genRefreshAccessToken(email)
+
+    const { refreshToken, accessToken } = await genRefreshAccessToken(user._id.toString())
+    await redis.set(`refreshToken:${user._id}`, refreshToken, "EX", 7 * 24 * 60 * 60)
     res.cookie('refreshToken', refreshToken, cookieOptions);
-    res.cookie('accessToken', accessToken, cookieOptions);
+    res.cookie('accessToken', accessToken, { ...cookieOptions, maxAge: 1000 * 60 * 15 });
 
     return res.status(200).json({
         message: "User registered successfully"
+    })
+
+
+}))
+//LOgin
+
+router.post("/login", wrapAsync(async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ message: "Please check the fields" })
+    }
+    const isUserExist = await User.findOne({ email })
+    if (!isUserExist) {
+        return res.status(400).json({ message: "Email or Password is incorrect" })
+    }
+    if (isUserExist?.password) {
+
+        const checkPW = await bcrypt.compare(password, isUserExist?.password)
+        if (!checkPW) {
+            return res.status(400).json({ message: "Email or Password is incorrect" })
+        }
+        const { accessToken, refreshToken } = await genRefreshAccessToken(isUserExist._id.toString())
+        await redis.set(`refreshToken:${isUserExist._id}`, refreshToken, "EX", 7 * 24 * 60 * 60)
+        res.cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 1000 * 60 * 15 });
+        res.cookie("refreshToken", refreshToken, cookieOptions)
+        return res.status(200).json({ message: "Login successful", user: { email: isUserExist.email, username: isUserExist.username, id: isUserExist._id } })
+    }
+
+
+
+}))
+
+router.post("/logout", wrapAsync(async (req, res) => {
+    const { refreshToken } = req.cookies
+
+    if (refreshToken) {
+        try {
+            const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as JwtPayload;
+            await redis.del(`refreshToken:${decoded._id}`)
+
+        } catch (error) {
+            return res.status(401).json({ message: "Invalid Token" })
+        }
+
+    }
+    res.clearCookie("accessToken")
+    res.clearCookie("refreshToken")
+    return res.status(200).json({
+        message: "Logout successful"
     })
 
 

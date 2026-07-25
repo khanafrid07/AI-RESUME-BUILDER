@@ -2,7 +2,7 @@
 import redis from "../config/redis";
 
 
-export const resendRateLimit = async (email: string) => {
+export const otpRateLimit = async (email: string) => {
 
     const resendOtp = await redis.incrby(`resend:${email}`, 1)
     if (resendOtp === 1) {
@@ -12,4 +12,6 @@ export const resendRateLimit = async (email: string) => {
     if (resendOtp > 5) {
         throw new Error("Too many requests")
     }
-}   
+}
+
+
