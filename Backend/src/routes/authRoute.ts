@@ -21,6 +21,7 @@ const cookieOptions: CookieOptions = {
 
 router.post("/register/send-otp", wrapAsync(async (req, res) => {
     const { email, password, username } = req.body;
+    console.log(req.body)
 
     if (!email || !password || !username) {
         return res.status(400).json({
@@ -158,7 +159,9 @@ router.post("/login", wrapAsync(async (req, res) => {
 
 }))
 
-router.post("/logout", wrapAsync(async (req, res) => {
+
+
+router.put("/logout", wrapAsync(async (req, res) => {
     const { refreshToken } = req.cookies
 
     if (refreshToken) {
@@ -167,7 +170,7 @@ router.post("/logout", wrapAsync(async (req, res) => {
             await redis.del(`refreshToken:${decoded._id}`)
 
         } catch (error) {
-            return res.status(401).json({ message: "Invalid Token" })
+            console.log(error)
         }
 
     }
