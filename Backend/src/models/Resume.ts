@@ -1,76 +1,85 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose from "mongoose";
+import { Schema } from "mongoose";
+import { Iresume } from "../types/resumeTypes";
 
-interface IExperience {
-    company: string;
-    role: string;
-    duration: string;
-}
-interface IResume extends Document {
-    user: mongoose.Types.ObjectId;
-
-    name: string;
-    title: string;
-    summary: string;
-
-    email: string;
-    phone: string;
-    location: string;
-
-    linkedin: string;
-    github: string;
-    portfolio: string;
-
-    template: string;
-    profileImage: string;
-    education: string[];
-
-    experience: IExperience[];
-
-    skills: string[];
-    languages: string[];
-    projects: string[];
-    certificates: string[];
-    interests: string[];
-}
-
-const resumeSchema = new Schema<IResume>({
+const resumeSchema = new Schema<Iresume>({
     user: {
         type: Schema.Types.ObjectId,
         ref: "User",
         required: true
-
     },
-
-    name: { type: String, required: true },
-    title: String,
+    template: {
+        type: String,
+        required: true
+    },
+    personalInfo: {
+        firstName: String,
+        lastName: String,
+        email: String,
+        phone: String,
+        address: String,
+        city: String,
+        country: String,
+        portfolioWeb: String
+    },
     summary: String,
-    email: String,
-    linkedin: String,
-    github: String,
-    profileImage: String,
-    portfolio: String,
-    template: String,
-    location: String,
-    phone: String,
-    education: [String],
+    education: [{
+        degree: String,
+        schoolName: String,
+        startDate: String,
+        endDate: String,
+        location: String,
+        description: String
+    }],
+    experience: [{
+        companyName: String,
+        jobRole: String,
+        startDate: String,
+        endDate: String,
+        currentlyWorking: Boolean,
+        location: String,
+        description: [String]
+    }],
+    projects: [{
+        projectName: String,
+        projectLink: String,
+        githubLink: String,
+        description: String,
+        startDate: String,
+        endDate: String,
+        technologies: String,
+    }],
+    skills: [{
+        id: String,
+        skills: String,
+        category: String
+    }],
+    certifications: [{
+        id: String,
+        title: String,
+        issuer: String,
+        issueDate: String
+    }],
+    languages: [{
+        id: String,
+        language: String,
+        proficiency: String
 
-    experience: [
-        {
-            company: String,
-            role: String,
-            duration: String,
-        },
-    ],
+    }],
+    targetRole: "",
+    hobbies: [String],
+    customSections: [{
+        id: String,
+        title: String,
+        content: String
+    }],
 
-    skills: [String],
-    languages: [{ name: String, level: String }],
-    projects: [{ title: String, descrpiton: String, linkTitle: String, link: String, duration: String }],
-    certificates: [String],
-    interests: [String],
-},
-    { timestamps: true }
-);
 
-const Resume = mongoose.model<IResume>("Resume", resumeSchema);
+})
 
-export default Resume;
+export default mongoose.model<Iresume>("Resume", resumeSchema);
+
+
+
+
+

@@ -158,6 +158,58 @@ router.post("/login", wrapAsync(async (req, res) => {
 
 
 }))
+router.get("/me", wrapAsync(async (req, res) => {
+    console.log("reached route")
+    const { accessToken } = req.cookies;
+    console.log(accessToken)
+    if (!accessToken) {
+        return res.status(401).json({
+            message: "Unauthorized"
+        })
+    }
+    const decodedAccessToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET as string) as JwtPayload;
+
+
+    const user = await User.findById(decodedAccessToken.id);
+    if (!user) {
+        return res.status(404).json({
+            message: "User not found"
+        })
+    }
+    return res.status(200).json({
+        message: "User found",
+        user: { email: user.email, username: user.username, id: user._id }
+    })
+}))
+
+router.get("/refresh", wrapAsync(async (req, res) => {
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) {
+        return res.status(400).json({ message: "Session expired please login again" })
+    }
+
+    const decodeRefreshToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as JwtPayload;
+    const storedRefreshToken = await redis.get(`refreshToken:${decodeRefreshToken.id}`);
+    if (!storedRefreshToken || storedRefreshToken !== refreshToken) {
+        return res.status(401).json({ message: "Session expired please login again" })
+    }
+    const user = await User.findById(decodeRefreshToken.id);
+    if (!user) {
+        return res.status(404).json({ message: "User not found" })
+    }
+
+    await redis.del(`refreshToken:${decodeRefreshToken.id}`);
+    const { accessToken, refreshToken: newRefreshToken } = await genRefreshAccessToken(user._id.toString())
+    await redis.set(`refreshToken:${user._id}`, newRefreshToken, "EX", 7 * 24 * 60 * 60);
+    res.cookie("accessToken", accessToken, { ...cookieOptions, maxAge: 1000 * 60 * 15 });
+    res.cookie("refreshToken", newRefreshToken, cookieOptions);
+    return res.status(200).json({ message: "Refresh token generated successfully", user: { email: user.email, username: user.username, id: user._id } })
+
+
+
+
+
+}))
 
 
 
@@ -182,5 +234,7 @@ router.put("/logout", wrapAsync(async (req, res) => {
 
 
 }))
+
+
 
 export default router

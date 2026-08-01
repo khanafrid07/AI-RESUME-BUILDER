@@ -5,6 +5,7 @@ dotenv.config();
 import db from "./config/db"
 import authRoute from "./routes/authRoute"
 import resumeRoute from "./routes/resumeRoute"
+import cookieParser from "cookie-parser"
 db()
 
 type config = {
@@ -17,6 +18,7 @@ const config: config = {
 }
 
 const app: Express = express();
+app.use(cookieParser())
 app.use(cors({
     credentials: true,
     origin: "http://localhost:5173"

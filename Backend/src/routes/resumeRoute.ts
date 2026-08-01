@@ -9,6 +9,7 @@ import { summaryPrompt } from "../Prompts/summaryPrompt";
 import { projectPrompt } from "../Prompts/projectPrompt";
 import { skillsSuggestionPrompt } from "../Prompts/skillPrompt";
 import experiencePrompt from "../Prompts/experincePrompt";
+import mongoose from "mongoose";
 
 
 
@@ -60,12 +61,38 @@ router.post("/ai/generate", async (req, res) => {
         });
     }
 });
-router.get("/", wrapAsync(async (req, res) => {
-    if (!req.userId) {
-        return res.status(401).json({ message: "Unauthorized" })
+router.post("/", wrapAsync(async (req, res) => {
+    const { resumeData } = req.body
+    if (!resumeData) {
+        return res.status(400).json({ message: "Resume data is required" })
     }
-    const getResume = await Resume.find({ user: req.userId })
-    res.status(200).json({ getResume })
+    const createResume = await Resume.create({
+        user: req.userId,
+        ...resumeData
+    })
+
+    res.status(200).json({ message: "Resume created successfully", resume: createResume })
 }))
+
+router.get("/", wrapAsync(async (req, res) => {
+    const id = req.userId
+    const findResume = await Resume.find({ user: id })
+    if (findResume.length === 0) {
+        return res.status(404).json({ message: "Resume not found" })
+    }
+    res.status(200).json({ message: "Resume fetched successfully", resume: findResume })
+}))
+
+router.get("/:id", wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    const findResume = await Resume.findById(id)
+    if (!findResume) {
+        return res.status(404).json({ message: "Resume not found" })
+    }
+    res.status(200).json({ message: "Resume fetched successfully", resume: findResume })
+
+}))
+
+
 
 export default router
