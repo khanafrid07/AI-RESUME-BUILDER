@@ -9,7 +9,7 @@ import {
     Target,
     FileText,
 } from "lucide-react";
-import type { AiFormInfo, AiFormProps } from "../types";
+import type { AiFormInfo, AiFormProps } from "../../Resume/types";
 
 const emptyAiFormData: AiFormInfo = {
     targetRole: "",

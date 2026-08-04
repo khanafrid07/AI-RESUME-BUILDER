@@ -61,22 +61,31 @@ router.post("/ai/generate", async (req, res) => {
         });
     }
 });
-router.post("/", wrapAsync(async (req, res) => {
-    const { resumeData } = req.body
+router.post("/save-user-resume", verifyToken, wrapAsync(async (req, res) => {
+    const { formData: resumeData, template } = req.body
+    console.log(resumeData, template)
     if (!resumeData) {
         return res.status(400).json({ message: "Resume data is required" })
     }
+    console.log(req.userId)
     const createResume = await Resume.create({
         user: req.userId,
-        ...resumeData
+        ...resumeData, experience: resumeData.experience.map((exp: any) => ({
+            ...exp,
+            currentlyWorking: true
+        })),
+        template,
+
     })
 
     res.status(200).json({ message: "Resume created successfully", resume: createResume })
 }))
 
-router.get("/", wrapAsync(async (req, res) => {
+router.get("/", verifyToken, wrapAsync(async (req, res) => {
+    console.log("get route reached")
     const id = req.userId
     const findResume = await Resume.find({ user: id })
+    console.log(findResume, "findResume")
     if (findResume.length === 0) {
         return res.status(404).json({ message: "Resume not found" })
     }
@@ -93,6 +102,26 @@ router.get("/:id", wrapAsync(async (req, res) => {
 
 }))
 
+router.put("/:id", wrapAsync(async (req, res) => {
+    const { id } = req.params
+    const { resumeData } = req.body
+    if (!resumeData) {
+        return res.status(400).json({ message: "Resume data is required" })
+    }
+    const updateResume = await Resume.findByIdAndUpdate(id, { $set: { ...resumeData } }, { new: true })
+    if (!updateResume) {
+        return res.status(404).json({ message: "Resume not found" })
+    }
+    res.status(200).json({ message: "Resume updated successfully", resume: updateResume });
+}));
 
+router.delete("/:id", verifyToken, wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    const deletedResume = await Resume.findOneAndDelete({ _id: id, user: req.userId });
+    if (!deletedResume) {
+        return res.status(404).json({ message: "Resume not found" });
+    }
+    res.status(200).json({ message: "Resume deleted successfully" });
+}));
 
-export default router
+export default router;

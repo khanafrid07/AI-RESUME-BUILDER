@@ -6,7 +6,7 @@ export interface Education {
     startDate: string;
     endDate: string;
     location: string;
-    description: string
+    description: string[]
 }
 export interface Experience {
     companyName: string;
@@ -21,7 +21,7 @@ export interface Projects {
     projectName: string;
     projectLink: string;
     githubLink: string;
-    description: string;
+    description: string[];
     startDate: string;
     endDate: string;
     technologies: string[]
@@ -74,18 +74,8 @@ export interface ResumeData {
     customSections: CustomSection[];
 }
 
-export interface Iresume {
+export interface Iresume extends ResumeData {
     user: mongoose.Types.ObjectId,
     template: string,
-    personalInfo: PersonalInfo,
-    summary: string,
-    education: Education[],
-    experience: Experience[],
-    projects: Projects[],
-    skills: Skill[],
-    certifications: Certification[],
-    languages: Language[],
-    targetRole: string,
-    hobbies: string[],
-    customSections: string[],
+
 }

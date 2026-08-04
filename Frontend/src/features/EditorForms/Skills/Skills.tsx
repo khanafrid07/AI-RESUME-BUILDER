@@ -106,7 +106,7 @@ export default function Skills({
     setShowForm(false);
   };
 
-  const handleSuggestionAdd = ()=>{
+  const handleSuggestionAdd = () => {
     console.log("gay")
   }
 
@@ -177,7 +177,7 @@ export default function Skills({
         />
 
       )}
-      <AISkillSuggestions selectedSkills= {skills} handleGenerate={handleGenerate} onAddSuggestions={handleSuggestionAdd} />
+      <AISkillSuggestions selectedSkills={skills} handleGenerate={handleGenerate} onAddSuggestions={handleSuggestionAdd} />
 
     </div>
   );

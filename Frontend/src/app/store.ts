@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit"
-import { resumeApi } from "../features/Dashboard/ResumeApi"
+import { resumeApi } from "../features/Resume/ResumeApi"
 import authApi from "../features/auth/authApi"
 
 

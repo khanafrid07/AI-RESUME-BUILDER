@@ -1,9 +1,9 @@
 import React, { useEffect, useState, type ChangeEvent } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TemplateRenderer from "../templates/TemplateRendere";
-import { useGenerateFiledMutation } from "../Dashboard/ResumeApi";
-import type { PersonalInfo, ResumeData } from "./types";
-import Steps from "../Dashboard/components/Steps";
+import { useGenerateFiledMutation, useSaveResumeMutation } from "../Resume/ResumeApi";
+import type { ResumeData } from "./types";
+import Steps from "../Resume/components/Steps";
 //{forms
 import ContactForm from "./components/ContactForm";
 import Skills from "./Skills/Skills";
@@ -24,7 +24,9 @@ type editPreview = "edit" | "preview";
 export default function FormController() {
     const { slug = "classic-ats" } = useParams();
     const [generateField, { isLoading }] = useGenerateFiledMutation()
+    const [saveResume, { isLoading: savingResume }] = useSaveResumeMutation()
     const savedResume = localStorage.getItem("data");
+    const navigate = useNavigate()
 
     const initialData = savedResume
         ? JSON.parse(savedResume)
@@ -37,14 +39,14 @@ export default function FormController() {
                 location: "",
                 startDate: "",
                 endDate: "",
-                description: "",
+                description: [],
             }],
             experience: [{
                 companyName: "",
                 jobRole: "",
                 startDate: "",
                 endDate: "",
-                currentlyWorking: "",
+                currentlyWorking: true,
                 location: "",
                 description: [],
             }],
@@ -52,7 +54,7 @@ export default function FormController() {
                 projectName: "",
                 projectLink: "",
                 githubLink: "",
-                description: "",
+                description: [],
                 startDate: "",
                 endDate: "",
                 technologies: []
@@ -72,12 +74,6 @@ export default function FormController() {
     const [page, setPage] = useState<step>("contactForm");
     const [editPreviewTab, setEditPreviewTab] = useState<editPreview>("edit");
 
-
-
-    useEffect(() => {
-        localStorage.setItem("data", JSON.stringify(resumeData))
-        console.log("Data saved to localStorage")
-    }, [resumeData])
 
     const handleGenerate = async (
         type: string,
@@ -149,6 +145,19 @@ export default function FormController() {
 
         })
     }
+    console.log(slug, "slug")
+
+    const handleSavetoDb = async () => {
+        try {
+            const res = await saveResume({ formData: resumeData, template: slug }).unwrap();
+            navigate("/resume/:id/edit")
+            return res.resume;
+
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
 
     const forms = [
         <ContactForm role={resumeData.targetRole} contactInfo={resumeData.personalInfo} setResumeData={setResumeData} />,
@@ -161,7 +170,7 @@ export default function FormController() {
     ]
 
     const handleStepsIncrease = () => {
-        if (step === forms.length) return
+        if (step === forms.length - 1) return
 
         setStep((prev) => prev + 1)
 
@@ -191,7 +200,15 @@ export default function FormController() {
                     <div className="flex justify-between py-12 ">
 
                         <button onClick={() => { setPage("AiForm"); handleStepsDecrease() }} className="btn btn-primary ">Previous</button>
-                        <button onClick={() => handleStepsIncrease()} className="btn btn-primary ">Next Page</button>
+                        {step < forms.length - 1 && (
+
+                            <button onClick={() => handleStepsIncrease()} className="btn btn-primary ">Next Page</button>
+                        )}
+
+                        {step === forms.length - 1 && (
+
+                            <button disabled={savingResume} onClick={handleSavetoDb} className="btn btn-primary">{savingResume ? "Saving..." : "Save Resume"}</button>
+                        )}
                     </div>
 
 

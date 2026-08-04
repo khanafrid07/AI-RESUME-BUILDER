@@ -22,7 +22,7 @@ export default function Signup() {
         try {
             const res: any = await sendOtp({ email: formData.email, password: formData.password, username: formData.username }).unwrap();
             console.log(res);
-            navigate("/auth/verify-otp", {
+            navigate("/account/verify-otp", {
                 state: formData.email
             });
         } catch (error) {

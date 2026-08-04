@@ -1,4 +1,9 @@
+import { useGetCurrentUserQuery } from "../features/auth/authApi"
 export default function Navbar() {
+    const { data: user, isLoading } = useGetCurrentUserQuery()
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
 
     return (
         <nav className="w-full">
@@ -8,7 +13,8 @@ export default function Navbar() {
                     <a className=" text-xl font-bold bg-gradient-to-r from-blue-400 to-gray-600 bg-clip-text text-transparent">Resume</a>
                 </div>
                 <div className="flex items-center gap-8">
-                    <a href="#">Home</a>
+                    <a href="/">Home</a>
+                    <a href="/">Dashboard</a>
                     <div className="dropdown dropdown-hover">
                         <div tabIndex={0} role="button" className="btn m-1">Template</div>
                         <ul className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
@@ -20,11 +26,20 @@ export default function Navbar() {
 
                 </div>
                 <div className="navbar-end">
-                    <a className="btn">Toggler</a>
+                    {user ? (
+                        <div className="flex items-center gap-4">
+                            <p className="text-sm">{user?.user?.username}</p>
+                            <button className="btn">Logout</button>
+                        </div>
+                    ) : (
+                        <div className="flex gap-4">
+                            <a href="/account/login">Login</a>
+                            <a href="/account/signup">Signup</a>
+                        </div>
+                    )}
                 </div>
-                <div className="flex gap-4"><a href="/auth/login">Login</a>
-                    <a href="/auth/signup">Signup</a>
-                </div>
+                <button>Saved Resume</button>
+
             </div>
         </nav>
     )

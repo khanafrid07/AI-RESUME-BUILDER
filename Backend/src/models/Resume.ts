@@ -29,7 +29,7 @@ const resumeSchema = new Schema<Iresume>({
         startDate: String,
         endDate: String,
         location: String,
-        description: String
+        description: [String]
     }],
     experience: [{
         companyName: String,
@@ -44,14 +44,14 @@ const resumeSchema = new Schema<Iresume>({
         projectName: String,
         projectLink: String,
         githubLink: String,
-        description: String,
+        description: [String],
         startDate: String,
         endDate: String,
-        technologies: String,
+        technologies: [String],
     }],
     skills: [{
         id: String,
-        skills: String,
+        skills: [String],
         category: String
     }],
     certifications: [{
@@ -66,7 +66,7 @@ const resumeSchema = new Schema<Iresume>({
         proficiency: String
 
     }],
-    targetRole: "",
+    targetRole: String,
     hobbies: [String],
     customSections: [{
         id: String,
