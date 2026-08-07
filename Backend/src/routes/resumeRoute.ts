@@ -102,7 +102,7 @@ router.get("/:id", wrapAsync(async (req, res) => {
 
 }))
 
-router.put("/:id", wrapAsync(async (req, res) => {
+router.put("/:id", verifyToken, wrapAsync(async (req, res) => {
     const { id } = req.params
     const { resumeData } = req.body
     if (!resumeData) {
