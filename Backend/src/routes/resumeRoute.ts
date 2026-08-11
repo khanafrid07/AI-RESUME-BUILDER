@@ -9,6 +9,7 @@ import { summaryPrompt } from "../Prompts/summaryPrompt";
 import { projectPrompt } from "../Prompts/projectPrompt";
 import { skillsSuggestionPrompt } from "../Prompts/skillPrompt";
 import experiencePrompt from "../Prompts/experincePrompt";
+import puppeteer from "puppeteer";
 import mongoose from "mongoose";
 
 
@@ -22,7 +23,7 @@ const promptMap = {
     education: educationPrompt,
     skills: skillsSuggestionPrompt,
 };
-router.post("/ai/generate", async (req, res) => {
+router.post("/ai/generate", verifyToken, wrapAsync(async (req, res) => {
     try {
         const { type, aiFormData } = req.body;
         console.log(JSON.stringify(req.body, null, 2));
@@ -60,7 +61,7 @@ router.post("/ai/generate", async (req, res) => {
             message: "AI generation failed.",
         });
     }
-});
+}));
 router.post("/save-user-resume", verifyToken, wrapAsync(async (req, res) => {
     const { formData: resumeData, template } = req.body
     console.log(resumeData, template)
@@ -102,6 +103,67 @@ router.get("/:id", wrapAsync(async (req, res) => {
 
 }))
 
+router.get("/:id/export/pdf", verifyToken, wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    console.log(id, "export id")
+
+    const resume = await Resume.findById(id);
+
+    if (!resume) {
+        return res.status(404).json({
+            message: "Resume not found"
+        });
+    }
+
+    const browser = await puppeteer.launch({
+        headless: true
+    });
+
+    try {
+        const page = await browser.newPage();
+        const { accessToken } = req.cookies;
+
+        if (accessToken) {
+            await page.setCookie({
+                name: "accessToken",
+                value: accessToken,
+                domain: "localhost",
+                path: "/",
+                httpOnly: true,
+                secure: true,
+            });
+        }
+        console.log("access token:", !!req.cookies.accessToken);
+
+        await page.goto(
+            `http://localhost:5173/resume/${resume._id}/export`,
+            {
+                waitUntil: "networkidle0"
+            }
+        );
+
+        const pdf = await page.pdf({
+            format: "A4",
+            printBackground: true,
+            margin: {
+                top: "0",
+                right: "0",
+                bottom: "0",
+                left: "0"
+            }
+        });
+
+        res.set({
+            "Content-Type": "application/pdf",
+            "Content-Disposition": 'attachment; filename="resume.pdf"'
+        });
+
+        return res.send(pdf);
+
+    } finally {
+        await browser.close();
+    }
+}));
 router.put("/:id", verifyToken, wrapAsync(async (req, res) => {
     const { id } = req.params
     const { resumeData } = req.body
