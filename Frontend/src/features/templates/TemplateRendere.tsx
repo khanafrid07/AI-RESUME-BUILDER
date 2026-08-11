@@ -16,9 +16,12 @@ export default function TemplateRenderer({ templateId, ...props }: TemplateRende
         return null;
     }
 
+
     return (
         <div>
-            <button className="btn btn-primary" onClick={() => navigate("/resume/templates")}>Switch Template</button>
+            {/* <button className="btn btn-primary " onClick={() => navigate("/resume/templates")}>Switch Template</button> */}
+
+
 
             <Component {...props} />
         </div>

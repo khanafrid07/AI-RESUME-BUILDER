@@ -16,7 +16,7 @@ const emptyExperience: ExperienceType = {
   jobRole: "",
   startDate: "",
   endDate: "",
-  currentlyWorking: "",
+  currentlyWorking: false,
   location: "",
   description: [],
 };

@@ -40,7 +40,7 @@ export default function Dashboard() {
     };
 
     const handleCreateNew = () => navigate("/resume/templates");
-    const handleEdit = (id: string) => navigate(`/resume/templates/${id}/edit`);
+    const handleEdit = (id: string, template: string) => navigate(`/resume/${template}/${id}/edit`);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-blue-300 via-blue-100 rounded-lg to-white p-4 sm:p-6 lg:p-10 font-sans">

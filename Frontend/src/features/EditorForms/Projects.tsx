@@ -15,7 +15,7 @@ const emptyProject: ProjectType = {
   projectName: "",
   projectLink: "",
   githubLink: "",
-  description: "",
+  description: [],
   startDate: "",
   endDate: "",
   technologies: [],

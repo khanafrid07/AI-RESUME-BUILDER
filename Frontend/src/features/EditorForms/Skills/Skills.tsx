@@ -177,7 +177,7 @@ export default function Skills({
         />
 
       )}
-      <AISkillSuggestions selectedSkills={skills} handleGenerate={handleGenerate} onAddSuggestions={handleSuggestionAdd} />
+      {/* <AISkillSuggestions selectedSkills={skills} handleGenerate={handleGenerate} onAddSuggestions={handleSuggestionAdd} /> */}
 
     </div>
   );

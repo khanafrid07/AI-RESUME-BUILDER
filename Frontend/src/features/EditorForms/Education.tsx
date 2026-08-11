@@ -17,7 +17,7 @@ const emptyEducation: EducationType = {
   location: "",
   startDate: "",
   endDate: "",
-  description: "",
+  description: [],
 };
 
 export default function Education({

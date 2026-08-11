@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { ResumeData } from "../EditorForms/types";
 type GenerateFieldRequest = {
   type: string;
-  aiFormData: Record<string, any>;
+  aiFormData: any;
 };
 
 export interface SavedResume extends ResumeData {
@@ -44,6 +44,14 @@ export const resumeApi = createApi({
       }),
       invalidatesTags: ["resume"]
     }),
+    updateResume: builder.mutation<SaveResponse, { id: string, formData: ResumeData }>({
+      query: ({ id, formData }) => ({
+        body: { resumeData: formData },
+        url: `/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["resume"]
+    }),
     getAllResume: builder.query<GetAllResponse, void>({
       query: () => ({
         url: "",
@@ -57,8 +65,23 @@ export const resumeApi = createApi({
         method: "DELETE",
       }),
       invalidatesTags: ["resume"]
+    }),
+
+    getSingleResume: builder.query<{ resume: SavedResume }, string>({
+      query: (id) => ({
+        url: `/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["resume"]
+    }),
+    exportResume: builder.mutation<Blob, string>({
+      query: (id) => ({
+        url: `/${id}/export/pdf`,
+        method: "GET",
+        responseHandler: (response) => response.blob(),
+      }),
     })
   }),
 });
 
-export const { useGenerateFiledMutation, useSaveResumeMutation, useGetAllResumeQuery, useDeleteResumeMutation } = resumeApi;
+export const { useGenerateFiledMutation, useSaveResumeMutation, useGetAllResumeQuery, useDeleteResumeMutation, useGetSingleResumeQuery, useUpdateResumeMutation, useExportResumeMutation } = resumeApi;

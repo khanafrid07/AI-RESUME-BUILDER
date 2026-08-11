@@ -4,7 +4,7 @@ import type { SavedResume } from "../../Resume/ResumeApi";
 
 interface ResumeCardProps {
   resume: SavedResume;
-  onEdit: (id: string) => void;
+  onEdit: (id: string, template: string) => void;
   onDelete: (id: string, e: React.MouseEvent) => void;
   isDeleting: boolean;
 }
@@ -62,7 +62,7 @@ export const ResumeCard: React.FC<ResumeCardProps> = ({
       {/* Actions Footer */}
       <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-3">
         <button
-          onClick={() => onEdit(resume._id)}
+          onClick={() => onEdit(resume._id, resume.template)}
           className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-xs transition-colors duration-200 cursor-pointer shadow-sm"
         >
           <Edit3 className="w-3.5 h-3.5" />
