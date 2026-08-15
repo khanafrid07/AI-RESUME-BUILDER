@@ -12,10 +12,11 @@ export default function Navbar() {
 
                     <a href="/" className=" text-xl font-bold bg-gradient-to-r from-blue-400 cursor-pointer to-gray-600 bg-clip-text text-transparent">Resume</a>
                 </div>
-                <div className="flex items-center gap-8">
+                <div className="w-full flex items-center gap-8">
                     <a className="hover:text-blue-500 transition-colors duration-200 font-semibold" href="/">Home</a>
                     <a className="hover:text-blue-500 transition-colors duration-200 font-semibold" href="/dashboard">Dashboard</a>
                     <a className="hover:text-blue-500 transition-colors duration-200 font-semibold" href="/resume/templates">Templates</a>
+                    <a className="hover:text-blue-500 transition-colors duration-200 font-semibold" href="/resume/Ats-Checker">ATS Checker</a>
 
 
 

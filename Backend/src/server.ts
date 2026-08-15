@@ -5,6 +5,7 @@ dotenv.config();
 import db from "./config/db"
 import authRoute from "./routes/authRoute"
 import resumeRoute from "./routes/resumeRoute"
+import atsRoute from "./routes/atsRoute"
 import cookieParser from "cookie-parser"
 db()
 
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoute)
 app.use("/api/resume", resumeRoute)
+app.use("/api/ats", atsRoute)
 
 
 
