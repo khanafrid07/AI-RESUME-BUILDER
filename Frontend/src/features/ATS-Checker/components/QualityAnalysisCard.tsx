@@ -14,7 +14,6 @@ interface QualityAnalysisProps {
     qualityResult?: Record<string, number> | ResumeQualityScore;
     isLoading?: boolean;
 }
-
 export default function QualityAnalysis({
     onCheckQuality,
     qualityResult,
@@ -148,4 +147,4 @@ export default function QualityAnalysis({
             </div>
         </div>
     );
-}
+}
