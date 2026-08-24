@@ -37,39 +37,44 @@ export default function Ats() {
         return <div>Error fetching resumes</div>
     }
 
-    const onCheckQuality = async () => {
-        if (!selectedResume) {
-            alert("Please select a resume")
-            return
+    const onCheckQuality = async (id?: string) => {
+        const targetId = id || selectedResume;
+        if (!targetId) {
+            alert("Please select a resume first.");
+            return;
         }
+        if (id && id !== selectedResume) {
+            setSelectedResume(id);
+        }
+        setAnalysisMode("quality");
         try {
-            const atsResult = await checkATS({ id: selectedResume }).unwrap()
-            console.log(atsResult)
+            const atsResult = await checkATS({ id: targetId }).unwrap();
+            console.log("ATS Result:", atsResult);
             if (atsResult.resumeQualityScore) {
-                setAtsResult(atsResult.resumeQualityScore.breakdown)
-                setQualityResult(atsResult.resumeQualityScore.breakdown)
+                setAtsResult(atsResult.resumeQualityScore);
+                setQualityResult({
+                    ...atsResult.resumeQualityScore.breakdown,
+                    score: atsResult.resumeQualityScore.score,
+                });
             }
         } catch (error) {
-            console.log(error)
+            console.error("Error checking ATS score:", error);
         }
-
-    }
-    console.log(qualityResult, "qr")
-
+    };
+    console.log(qualityResult, "qr");
 
     const handleCheckAtsWithDesc = async (id: string) => {
         try {
-            const atsResult = await checkATS({ id, jobDescription, jobRole: jobTitle, companyName }).unwrap()
-            console.log(atsResult)
+            const atsResult = await checkATS({ id, jobDescription, jobRole: jobTitle, companyName }).unwrap();
+            console.log(atsResult);
             if (atsResult.resumeQualityScore) {
-                setAtsResult(atsResult.resumeQualityScore)
-
+                setAtsResult(atsResult.resumeQualityScore);
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
+    };
 
-    }
     return (
         <BackgroundLayout>
             <div className="bg-blue-500 rounded-lg shadow-lg p-6 text-white flex items-center gap-4">
@@ -84,11 +89,17 @@ export default function Ats() {
                 <ResumeListCard selectedResume={selectedResume} setSelectedResume={setSelectedResume} resume={resume} onCheckAts={onCheckQuality} />
                 <UploadCard />
             </div>
-            <ChooseAnalysis Analysis={analysisMode} setAnalysisMode={setAnalysisMode} onCheckQuality={onCheckQuality} qualityResult={qualityResult} />
+            <ChooseAnalysis
+                Analysis={analysisMode}
+                setAnalysisMode={setAnalysisMode}
+                onCheckQuality={onCheckQuality}
+                qualityResult={qualityResult}
+                isLoading={isChecking}
+            />
 
             {/* <JobDescription onCheckAtsWithDesc={handleCheckAtsWithDesc} selectedResume={selectedResume} jobDescription={jobDescription} setJobDescription={setJobDescription} companyName={companyName} setCompanyName={setCompanyName} jobTitle={jobTitle} setJobTitle={setJobTitle} /> */}
             {/* <AtsScore atsResult={atsResult} /> */}
             {/* <ScoreBreakdown atsResult={atsResult} /> */}
         </BackgroundLayout>
-    )
+    );
 }

@@ -1,7 +1,21 @@
 import JobAnalysisCard from "./JobAnalysisCard";
 import QualityAnalysis from "./QualityAnalysisCard";
 
-export default function ChooseAnalysis({ Analysis, setAnalysisMode, onCheckQuality, qualityResult }: { Analysis?: "quality" | "jobMatch" | null, setAnalysisMode: (arg: "quality" | "jobMatch") => void, onCheckQuality: () => void, qualityResult: Record<string, number> }) {
+interface ChooseAnalysisProps {
+    Analysis?: "quality" | "jobMatch" | null;
+    setAnalysisMode: (arg: "quality" | "jobMatch" | null) => void;
+    onCheckQuality: () => void;
+    qualityResult?: Record<string, number>;
+    isLoading?: boolean;
+}
+
+export default function ChooseAnalysis({
+    Analysis,
+    setAnalysisMode,
+    onCheckQuality,
+    qualityResult,
+    isLoading
+}: ChooseAnalysisProps) {
     return (
         <div className="rounded-2xl bg-white p-8 shadow-md border border-slate-200 mt-12">
 
@@ -17,11 +31,32 @@ export default function ChooseAnalysis({ Analysis, setAnalysisMode, onCheckQuali
             </div>
 
             {/* Cards */}
-            <div className="">
-                {Analysis === "quality" ? <QualityAnalysis onCheckQuality={onCheckQuality} /> : Analysis === "jobMatch" ? <JobAnalysisCard /> :
-
-
-
+            <div className="mt-6">
+                {Analysis === "quality" ? (
+                    <div>
+                        <button
+                            onClick={() => setAnalysisMode(null)}
+                            className="mb-4 text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                            ← Back to Analysis Options
+                        </button>
+                        <QualityAnalysis
+                            onCheckQuality={onCheckQuality}
+                            qualityResult={qualityResult}
+                            isLoading={isLoading}
+                        />
+                    </div>
+                ) : Analysis === "jobMatch" ? (
+                    <div>
+                        <button
+                            onClick={() => setAnalysisMode(null)}
+                            className="mb-4 text-xs font-semibold text-purple-600 hover:text-purple-800 hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                            ← Back to Analysis Options
+                        </button>
+                        <JobAnalysisCard />
+                    </div>
+                ) : (
                     <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div
                             onClick={() => setAnalysisMode("quality")}
@@ -81,9 +116,9 @@ export default function ChooseAnalysis({ Analysis, setAnalysisMode, onCheckQuali
                             </div>
                         </div>
                     </div>
-                }
+                )}
 
             </div>
         </div>
     );
-}
+}
