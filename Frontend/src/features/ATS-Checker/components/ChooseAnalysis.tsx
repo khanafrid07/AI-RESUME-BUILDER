@@ -1,4 +1,5 @@
 import JobAnalysisCard from "./JobAnalysisCard";
+import JobDescription from "./JobDescription";
 import QualityAnalysis from "./QualityAnalysisCard";
 
 interface ChooseAnalysisProps {
@@ -7,6 +8,15 @@ interface ChooseAnalysisProps {
     onCheckQuality: () => void;
     qualityResult?: Record<string, number>;
     isLoading?: boolean;
+    jobTitle?: string;
+    setJobTitle?: (val: string) => void;
+    companyName?: string;
+    setCompanyName?: (val: string) => void;
+    jobDescription?: string;
+    setJobDescription?: (val: string) => void;
+    onCheckJobMatch?: (id?: string) => void;
+    selectedResume?: string;
+    atsResult?: any;
 }
 
 export default function ChooseAnalysis({
@@ -14,7 +24,16 @@ export default function ChooseAnalysis({
     setAnalysisMode,
     onCheckQuality,
     qualityResult,
-    isLoading
+    isLoading,
+    jobTitle,
+    setJobTitle,
+    companyName,
+    setCompanyName,
+    jobDescription,
+    setJobDescription,
+    onCheckJobMatch,
+    selectedResume,
+    atsResult
 }: ChooseAnalysisProps) {
     return (
         <div className="rounded-2xl bg-white p-8 shadow-md border border-slate-200 mt-12">
@@ -54,7 +73,18 @@ export default function ChooseAnalysis({
                         >
                             ← Back to Analysis Options
                         </button>
-                        <JobAnalysisCard />
+                        <JobDescription
+                            jobTitle={jobTitle}
+                            setJobTitle={setJobTitle}
+                            companyName={companyName}
+                            setCompanyName={setCompanyName}
+                            jobDescription={jobDescription}
+                            setJobDescription={setJobDescription}
+                            onCheckAtsWithDesc={onCheckJobMatch}
+                            isLoading={isLoading}
+                            atsResult={atsResult}
+                            selectedResume={selectedResume}
+                        />
                     </div>
                 ) : (
                     <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -121,4 +151,4 @@ export default function ChooseAnalysis({
             </div>
         </div>
     );
-}
+}

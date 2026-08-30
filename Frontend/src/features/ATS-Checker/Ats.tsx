@@ -36,7 +36,7 @@ export default function Ats() {
     if (isError) {
         return <div>Error fetching resumes</div>
     }
-
+    console.log(jobDescription, "desc job")
     const onCheckQuality = async (id?: string) => {
         const targetId = id || selectedResume;
         if (!targetId) {
@@ -51,7 +51,7 @@ export default function Ats() {
             const atsResult = await checkATS({ id: targetId }).unwrap();
             console.log("ATS Result:", atsResult);
             if (atsResult.resumeQualityScore) {
-                setAtsResult(atsResult.resumeQualityScore);
+
                 setQualityResult({
                     ...atsResult.resumeQualityScore.breakdown,
                     score: atsResult.resumeQualityScore.score,
@@ -64,12 +64,11 @@ export default function Ats() {
     console.log(qualityResult, "qr");
 
     const handleCheckAtsWithDesc = async (id: string) => {
+        console.log("hitt")
         try {
             const atsResult = await checkATS({ id, jobDescription, jobRole: jobTitle, companyName }).unwrap();
             console.log(atsResult);
-            if (atsResult.resumeQualityScore) {
-                setAtsResult(atsResult.resumeQualityScore);
-            }
+            setAtsResult(atsResult)
         } catch (error) {
             console.log(error);
         }
@@ -95,6 +94,15 @@ export default function Ats() {
                 onCheckQuality={onCheckQuality}
                 qualityResult={qualityResult}
                 isLoading={isChecking}
+                jobTitle={jobTitle}
+                setJobTitle={setJobTitle}
+                companyName={companyName}
+                setCompanyName={setCompanyName}
+                jobDescription={jobDescription}
+                setJobDescription={setJobDescription}
+                onCheckJobMatch={handleCheckAtsWithDesc}
+                selectedResume={selectedResume}
+                atsResult={atsResult}
             />
 
             {/* <JobDescription onCheckAtsWithDesc={handleCheckAtsWithDesc} selectedResume={selectedResume} jobDescription={jobDescription} setJobDescription={setJobDescription} companyName={companyName} setCompanyName={setCompanyName} jobTitle={jobTitle} setJobTitle={setJobTitle} /> */}

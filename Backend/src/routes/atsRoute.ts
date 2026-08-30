@@ -23,10 +23,12 @@ router.post("/check/:id", verifyToken, wrapAsync(async (req, res) => {
         const matchJobDesc = await matchResumeWithJobDesc({ resume, jobAnalysis })
         const JobmatchScore = calculateJobMatchScore(matchJobDesc.matches)
         const finalScore = Math.round(JobmatchScore * 0.7 + resumeQualityScore.score * 0.3)
+        console.log(JobmatchScore, "job desc match")
+        console.log(finalScore, "final")
         return res.json({ message: "ats analyzed success", finalScore, resumeQualityScore, JobmatchScore, matchJobDesc })
 
     }
-
+    console.log("hitt")
     return res.json({ message: "ats analyzed success", resumeQualityScore })
 
 }))
