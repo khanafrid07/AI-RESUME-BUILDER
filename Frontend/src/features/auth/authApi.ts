@@ -36,6 +36,15 @@ type User = {
 type GetCurrentUserResponse = {
     user: User;
 };
+type LoginUserProps = {
+    email: string;
+    password: string;
+};
+type LoginUserResponse = {
+    statusCode: number;
+    message: string;
+    user: User;
+};
 
 
 const authApi = createApi({
@@ -70,6 +79,13 @@ const authApi = createApi({
                 body: data,
             }),
         }),
+        loginUser: builder.mutation<LoginUserResponse, LoginUserProps>({
+            query: (data) => ({
+                url: "/login",
+                method: "POST",
+                body: data,
+            }),
+        }),
         getCurrentUser: builder.query<GetCurrentUserResponse, void>({
             query: () => ({
                 url: "/me",
@@ -84,7 +100,8 @@ export const {
     useSendOtpMutation,
     useVerifyOtpMutation,
     useRegisterResendOtpMutation,
-    useGetCurrentUserQuery
+    useGetCurrentUserQuery,
+    useLoginUserMutation
 } = authApi;
 
 export default authApi;

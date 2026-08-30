@@ -7,6 +7,7 @@ import { DashboardSearchBar } from "./components/DashboardSearchBar";
 import { ResumeCard } from "./components/ResumeCard";
 import { DashboardSkeleton } from "./components/DashboardSkeleton";
 import { EmptyDashboardState } from "./components/EmptyDashboardState";
+import BackgroundLayout from "../../common/BackgroundLayout";
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -43,7 +44,8 @@ export default function Dashboard() {
     const handleEdit = (id: string, template: string) => navigate(`/resume/${template}/${id}/edit`);
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-300 via-blue-100 rounded-lg to-white p-4 sm:p-6 lg:p-10 font-sans">
+        <BackgroundLayout>
+
             <div className="max-w-7xl mx-auto space-y-8">
                 <DashboardHeader onCreateNew={handleCreateNew} />
 
@@ -92,6 +94,6 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
-        </div>
+        </BackgroundLayout >
     );
 }

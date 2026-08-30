@@ -82,6 +82,7 @@ router.post("/save-user-resume", verifyToken, wrapAsync(async (req, res) => {
     res.status(200).json({ message: "Resume created successfully", resume: createResume })
 }))
 
+
 router.get("/", verifyToken, wrapAsync(async (req, res) => {
     console.log("get route reached")
     const id = req.userId

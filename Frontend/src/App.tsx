@@ -9,18 +9,20 @@ import VerifyOtp from "./features/auth/components/VerifyOtp"
 import { useGetCurrentUserQuery } from "./features/auth/authApi"
 import Dashboard from "./features/Dashboard/Dashboard"
 import ExportResume from "./features/Resume/ExportResume"
+import Ats from "./features/ATS-Checker/Ats"
 function App() {
-  // const { data, isLoading } = useGetCurrentUserQuery()
-  // if (isLoading) {
-  //   return <div>Loading...</div>
-  // }
-  // console.log(data)
+  const { data, isLoading } = useGetCurrentUserQuery()
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <Routes>
       <Route element={<UserLayout />}>
         <Route index path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/resume/templates" element={<TemplatePage />} />
+        <Route path="/resume/Ats-Checker" element={<Ats />} />
         <Route path="/resume/templates/create/:slug" element={<CreateResume />} />
         <Route path="/resume/:slug/:id/edit" element={<CreateResume />} />
         <Route path="/account/login" element={<Login />} />

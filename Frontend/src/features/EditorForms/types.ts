@@ -59,6 +59,7 @@ export interface CustomSection {
 }
 
 export interface ResumeData {
+    _id?: string;
     personalInfo: PersonalInfo;
     summary: string;
     education: Education[];

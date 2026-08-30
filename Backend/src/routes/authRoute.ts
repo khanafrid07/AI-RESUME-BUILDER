@@ -135,6 +135,7 @@ router.post("/register/verify-otp", wrapAsync(async (req, res) => {
 
 router.post("/login", wrapAsync(async (req, res) => {
     const { email, password } = req.body;
+    console.log(req.body, "lgin body")
     if (!email || !password) {
         return res.status(400).json({ message: "Please check the fields" })
     }
