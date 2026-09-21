@@ -25,6 +25,7 @@ router.post("/check/:id", verifyToken, wrapAsync(async (req, res) => {
         const finalScore = Math.round(JobmatchScore * 0.7 + resumeQualityScore.score * 0.3)
         console.log(JobmatchScore, "job desc match")
         console.log(finalScore, "final")
+        console.log(matchJobDesc, "Matched and missing")
         return res.json({ message: "ats analyzed success", finalScore, resumeQualityScore, JobmatchScore, matchJobDesc })
 
     }
