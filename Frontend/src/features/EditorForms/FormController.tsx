@@ -186,12 +186,13 @@ export default function FormController() {
             };
         });
     };
-
+    console.log(resumeData, "this is resumeData")
     const handleSavetoDb = async () => {
         try {
             if (id) {
                 const updatedData = { ...resumeData, template: activeTemplate };
                 const res = await updateResume({ id, formData: updatedData }).unwrap();
+
                 return res.resume;
             }
             const updatedData = { ...resumeData, template: activeTemplate };

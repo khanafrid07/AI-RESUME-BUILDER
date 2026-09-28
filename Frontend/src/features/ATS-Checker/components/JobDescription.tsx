@@ -54,12 +54,7 @@ export default function JobDescription({
     return (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-md transition-all duration-200 hover:border-purple-300">
             {/* ... Header & Resume Alert stays exactly the same ... */}
-            {atsResult ? <JobDescriptionScoreCard score={atsResult} /> :
-
-
-
-
-
+            {atsResult ? <JobDescriptionScoreCard score={atsResult} matchedJobDesc={atsResult?.matchJobDesc} /> :
 
                 <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
